@@ -1,4 +1,5 @@
 import numpy as np
+import common.MoveAvg as mvAvg
 from cereal import log
 from common.filter_simple import FirstOrderFilter
 from common.numpy_fast import interp
@@ -51,7 +52,7 @@ class LanePlanner:
     self.soft_model_speed = self.MAX_MODEL_SPEED
     self.curvature_gain  = 0.8
     self.curvature = 0
-
+    self.moveAvg = mvAvg.MoveAvg()
 
   def cal_model_speed(self, md, v_ego):
     if v_ego < 1.0:
@@ -73,6 +74,7 @@ class LanePlanner:
       if model_speed > self.MAX_MODEL_SPEED:
         model_speed = self.MAX_MODEL_SPEED                
 
+      model_speed = self.moveAvg.get_min(model_speed, 30)
       self.curvature = curv
       self.model_speed = model_speed
       delta_model = self.model_speed  - self.soft_model_speed

@@ -71,7 +71,7 @@ class MoveAvg():
                 self.data_steer.pop(0)
 
 
-        data_min = 255
+        data_min = 1000
         for enum in self.data_steer:
             if data_min > enum:
                 data_min = enum
