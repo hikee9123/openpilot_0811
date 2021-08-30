@@ -50,7 +50,7 @@ class LanePlanner:
     self.MAX_MODEL_SPEED = 200.    # 71 , 255.0
     self.MIN_MODEL_SPEED = 10.    # 30 
     self.soft_model_speed = self.MAX_MODEL_SPEED
-    self.model_speed = 0
+    self.model_speed = 200
     self.curvature_gain  = 0.8
     self.curvature = 0
     self.moveAvg = mvAvg.MoveAvg()
