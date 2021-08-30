@@ -189,12 +189,16 @@ def map_return():
 
 
 def main():
-  map_exec()
+  navi_on_boot = int(Params().get("OpkrRunNaviOnBoot"))
+  if navi_on_boot:  
+    map_exec()
+
   prepare_only = os.getenv("PREPAREONLY") is not None
 
   manager_init()
   
-  map_hide()
+  if navi_on_boot:  
+    map_hide()
   # Start UI early so prepare can happen in the background
   if not prepare_only:
     managed_processes['ui'].start()
