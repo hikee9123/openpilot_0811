@@ -9,7 +9,7 @@ import cereal.messaging as messaging
 from cereal import car
 from common.params import Params, put_nonblocking
 from common.realtime import set_realtime_priority, DT_MDL
-from common.numpy_fast import clip
+from common.numpy_fast import clip, interp
 from selfdrive.locationd.models.car_kf import CarKalman, ObservationKind, States
 from selfdrive.locationd.models.constants import GENERATED_DIR
 from selfdrive.swaglog import cloudlog
@@ -76,7 +76,7 @@ def main(sm=None, pm=None):
   set_realtime_priority(5)
 
   if sm is None:
-    sm = messaging.SubMaster(['liveLocationKalman', 'carState'], poll=['liveLocationKalman'])
+    sm = messaging.SubMaster(['liveLocationKalman', 'carState', 'lateralPlan'], poll=['liveLocationKalman'])
   if pm is None:
     pm = messaging.PubMaster(['liveParameters'])
 
@@ -128,7 +128,7 @@ def main(sm=None, pm=None):
 
   angle_offset_average = params['angleOffsetAverageDeg']
   angle_offset = angle_offset_average
-
+  modelSpeed = 0
   while True:
     sm.update()
 
@@ -136,6 +136,10 @@ def main(sm=None, pm=None):
       if updated:
         t = sm.logMonoTime[which] * 1e-9
         learner.handle_log(t, which, sm[which])
+
+    if sm.updated['lateralPlan']:
+      modelSpeed = sm['lateralPlan'].modelSpeed
+     
 
     if sm.updated['liveLocationKalman']:
       x = learner.kf.x
@@ -150,10 +154,18 @@ def main(sm=None, pm=None):
       msg = messaging.new_message('liveParameters')
       msg.logMonoTime = sm.logMonoTime['carState']
 
+
+ 
+      dRate = 1.0
+      if modelSpeed:
+        dRate = interp( modelSpeed, [200,300], [ 1, 0.9 ] )
+
       steerRatio  = float(x[States.STEER_RATIO])
-      steerRatio  *= 0.95
+      steerRatio *= dRate
       if steerRatio > 18:
         steerRatio = 18
+      elif steerRatio < 12:
+        steerRatio = 12
 
       msg.liveParameters.posenetValid = True
       msg.liveParameters.sensorValid = True
