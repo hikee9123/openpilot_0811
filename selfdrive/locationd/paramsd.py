@@ -162,8 +162,8 @@ def main(sm=None, pm=None):
 
       steerRatio  = float(x[States.STEER_RATIO])
       steerRatio *= dRate
-      if steerRatio > 18:
-        steerRatio = 18
+      if steerRatio > 18.5:
+        steerRatio = 18.5
       elif steerRatio < 12:
         steerRatio = 12
 
