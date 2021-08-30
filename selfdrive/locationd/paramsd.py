@@ -150,9 +150,14 @@ def main(sm=None, pm=None):
       msg = messaging.new_message('liveParameters')
       msg.logMonoTime = sm.logMonoTime['carState']
 
+      steerRatio  = float(x[States.STEER_RATIO])
+      steerRatio  *= 0.95
+      if steerRatio > 18:
+        steerRatio = 18
+
       msg.liveParameters.posenetValid = True
       msg.liveParameters.sensorValid = True
-      msg.liveParameters.steerRatio = float(x[States.STEER_RATIO])
+      msg.liveParameters.steerRatio = steerRatio
       msg.liveParameters.stiffnessFactor = float(x[States.STIFFNESS])
       msg.liveParameters.angleOffsetAverageDeg = angle_offset_average
       msg.liveParameters.angleOffsetDeg = angle_offset
