@@ -189,6 +189,7 @@ def map_return():
 
 
 def main():
+  map_exec()
   prepare_only = os.getenv("PREPAREONLY") is not None
 
   manager_init()
