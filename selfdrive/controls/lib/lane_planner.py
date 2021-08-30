@@ -50,7 +50,7 @@ class LanePlanner:
     self.MAX_MODEL_SPEED = 200.    # 71 , 255.0
     self.MIN_MODEL_SPEED = 10.    # 30 
     self.soft_model_speed = self.MAX_MODEL_SPEED
-    self.model_speed = 200
+    self.model_speed = 100
     self.curvature_gain  = 0.8
     self.curvature = 0
     self.moveAvg = mvAvg.MoveAvg()
@@ -82,9 +82,11 @@ class LanePlanner:
       if self.soft_model_speed == self.model_speed:
           pass
       elif delta_model < -1:
-          self.soft_model_speed -= 0.4  #model_speed
+          dRate = interp( v_ego, [1,25], [0.1,0.8] )
+          self.soft_model_speed -= dRate  #0.4 model_speed
       elif delta_model > 0:
-          self.soft_model_speed += 0.2
+          dRate = interp( v_ego, [1,25], [0.05,0.4])
+          self.soft_model_speed += dRate  #0.2
       else:
           self.soft_model_speed = self.model_speed
     return  self.soft_model_speed
