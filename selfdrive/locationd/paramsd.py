@@ -163,8 +163,8 @@ def main(sm=None, pm=None):
       steerRatio  = float(x[States.STEER_RATIO])
      # print( "modelSpeed={:.3f} dRate={:.3f}".format(modelSpeed, dRate) );
       steerRatio *= dRate
-      if steerRatio > 18.5:
-        steerRatio = 18.5
+      if steerRatio > 19.5:
+        steerRatio = 19.5
       elif steerRatio < 12:
         steerRatio = 12
 
