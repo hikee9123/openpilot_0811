@@ -69,8 +69,6 @@ class LateralPlanner():
     self.y_pts = np.zeros(TRAJECTORY_SIZE)
 
 
-
-
   def auto_lanechange( self, md, torque_applied ):
     # auto
     self.lane_change_timer_auto += DT_MDL
@@ -116,9 +114,10 @@ class LateralPlanner():
     steeringTorqueAbs = abs(sm['carState'].steeringTorque)
 
     md = sm['modelV2']
-    #if (self.sm.frame % int(5) == 0):
-    self.LP.cal_model_speed( md, v_ego )
-    self.LP.parse_model(sm['modelV2'])
+    if sm.frame % 2 == 0:
+      self.LP.cal_model_speed( md, v_ego )
+
+    self.LP.parse_model( md )
     if len(md.position.x) == TRAJECTORY_SIZE and len(md.orientation.x) == TRAJECTORY_SIZE:
       self.path_xyz = np.column_stack([md.position.x, md.position.y, md.position.z])
       self.t_idxs = np.array(md.position.t)

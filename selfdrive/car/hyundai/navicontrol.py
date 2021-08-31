@@ -5,7 +5,6 @@ import numpy as np
 
 from selfdrive.config import Conversions as CV
 from selfdrive.car.hyundai.values import Buttons
-from selfdrive.controls.lib.lane_planner import TRAJECTORY_SIZE
 from common.numpy_fast import clip, interp
 import cereal.messaging as messaging
 

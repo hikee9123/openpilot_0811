@@ -21,8 +21,6 @@ else:
   PATH_OFFSET = 0.0
 
 
-
-
 class LanePlanner:
   def __init__(self, wide_camera=False):
     self.ll_t = np.zeros((TRAJECTORY_SIZE,))
