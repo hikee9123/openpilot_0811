@@ -73,7 +73,7 @@ class LanePlanner:
       if model_speed > self.MAX_MODEL_SPEED:
         model_speed = self.MAX_MODEL_SPEED                
 
-      model_speed = self.moveAvg.get_min(model_speed, 30)
+      model_speed = self.moveAvg.get_min(model_speed, 15)
       self.curvature = curv
       self.model_speed = model_speed
       delta_model = self.model_speed  - self.soft_model_speed
