@@ -244,8 +244,7 @@ class CarState(CarStateBase):
 
     self.hda_signal1 = cp.vl["HDA11_MFC"]["NEW_SIGNAL_1"]  # != 0.
     
-    #self.navi_camera_status  =  cp.vl["SCC11"]["Navi_SCC_Camera_Status"]
-    #self.hda_VsetReq  =  cp.vl["LFAHDA_MFC"]["HDA_VSetReq"]
+
     if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
       self.enable_status = False
     else:
