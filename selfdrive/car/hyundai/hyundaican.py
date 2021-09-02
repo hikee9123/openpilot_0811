@@ -59,7 +59,7 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
 
   values["CF_Lkas_Chksum"] = checksum
 
-  return packer.make_can_msg("LKAS11", 0, values)
+  return packer.make_can_msg("LKAS11", 0, values)   # 2
 
 
 def create_clu11(packer, frame, clu11, button):
@@ -190,4 +190,4 @@ def create_mdps12(packer, frame, mdps12):
   checksum = sum(dat) % 256
   values["CF_Mdps_Chksum2"] = checksum
 
-  return packer.make_can_msg("MDPS12", 2, values)
+  return packer.make_can_msg("MDPS12", 2, values)   # 0
