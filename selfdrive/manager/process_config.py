@@ -23,7 +23,7 @@ procs = [
   NativeProcess("boardd", "selfdrive/boardd", ["./boardd"], enabled=False),
   PythonProcess("calibrationd", "selfdrive.locationd.calibrationd"),
   PythonProcess("controlsd", "selfdrive.controls.controlsd"),
-  #PythonProcess("deleter", "selfdrive.loggerd.deleter", persistent=True),
+  PythonProcess("deleter", "selfdrive.loggerd.deleter", persistent=True),
   PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", enabled=(not PC or WEBCAM), driverview=True),
   PythonProcess("logmessaged", "selfdrive.logmessaged", persistent=True),
   PythonProcess("pandad", "selfdrive.pandad", persistent=True),
@@ -37,8 +37,8 @@ procs = [
   PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
   
   # EON only
-  #PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
-  #PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
+  PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
+  PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
   #PythonProcess("mapd", "selfdrive.mapd.mapd", persistent=True),
 ]
 
