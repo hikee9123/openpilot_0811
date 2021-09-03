@@ -354,7 +354,6 @@ class CarState(CarStateBase):
       ("HDA11_MFC", 10),
     ]
 
-
     if CP.enableBsm:
       signals += [
         ("CF_Lca_IndLeft", "LCA11", 0),
