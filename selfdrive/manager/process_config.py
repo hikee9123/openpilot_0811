@@ -37,8 +37,8 @@ procs = [
   PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
   
   # EON only
-  PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
-  PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
+  #PythonProcess("rtshield", "selfdrive.rtshield", enabled=EON),
+  #PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
   #PythonProcess("mapd", "selfdrive.mapd.mapd", persistent=True),
 ]
 
