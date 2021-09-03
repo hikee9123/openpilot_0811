@@ -28,7 +28,6 @@ class CarState(CarStateBase):
     self.cruise_buttons = 0
     self.cruise_buttons_time = 0
     self.time_delay_int = 0
-    self.enable_status = 0
     self.VSetDis = 0
     self.clu_Vanz = 0
 
@@ -41,7 +40,49 @@ class CarState(CarStateBase):
     self.cruise_set_mode = 0      # 모드 설정.
     self.gasPressed = False
 
+    # engage button
+    self.cruise_available = False
+    self.acc_mode = False
+    self.engage_enable = False
+    self.enagage_status = 0
+    self.cruise_buttons_old = 0
 
+  def engage_control( self, ret ):
+    status_flag = 0
+    if not self.cruise_available or ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
+      status_flag = 1
+      self.enagage_status = 0
+      self.engage_enable = False
+      self.time_delay_int = 100
+    elif self.acc_mode:
+      self.enagage_status = 2
+      self.engage_enable = True
+
+
+    if self.cruise_buttons_old == self.cruise_buttons:
+      if self.engage_enable:
+        return True
+      elif ret.vEgo < 5:   # 15 km/h
+        self.time_delay_int = 100
+      elif self.time_delay_int > 0:
+        self.time_delay_int -= 1
+      else:
+        self.engage_enable = True
+      return  self.engage_enable
+
+    self.cruise_buttons_old = self.cruise_buttons
+
+    if status_flag == 1:
+      self.engage_enable = False    
+    elif self.cruise_buttons == Buttons.GAP_DIST:
+      self.engage_enable = True
+      self.enagage_status = 1
+    elif self.cruise_buttons == Buttons.CANCEL:
+      self.enagage_status = 0
+      self.time_delay_int = 1000
+      self.engage_enable = False
+
+    return  self.engage_enable
 
   #@staticmethod
   def cruise_speed_button( self ):
@@ -96,23 +137,6 @@ class CarState(CarStateBase):
     return  set_speed_kph
 
 
-
-  def cruise_enabled_btn( self, main_on, vEgo ):
-    if main_on == False:
-      self.time_delay_int = 0
-    elif not self.enable_status:
-      self.time_delay_int = 2000
-    elif vEgo > 5:   # 15 km/h
-        self.time_delay_int = 0
-    elif self.time_delay_int > 0:
-      self.time_delay_int -= 1
-
-    if self.time_delay_int <= 0:
-      enabled = main_on
-    else:
-      enabled = False
-
-    return  enabled
 
   # TPMS code added from OPKR
   def update_tpms(self, cp, ret ):
@@ -176,8 +200,11 @@ class CarState(CarStateBase):
     #  ret.cruiseState.standstill = False
     #else:
     ret.cruiseState.available = cp.vl["SCC11"]["MainMode_ACC"] == 1
-    ret.cruiseState.enabled = ret.cruiseState.available # cp.vl["SCC12"]["ACCMode"] != 0
+    ret.cruiseState.enabled = cp.vl["SCC12"]["ACCMode"] != 0
     ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
+    self.cruise_available = ret.cruiseState.available
+    self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0    
+
 
     set_speed = self.cruise_speed_button()
     if self.acc_active:
@@ -227,6 +254,8 @@ class CarState(CarStateBase):
       ret.rightBlindspot = cp.vl["LCA11"]["CF_Lca_IndRight"] != 0
 
     ret = self.update_tpms( cp, ret )
+    ret.cruiseState.enabled = self.engage_control( ret )
+
     # save the entire LKAS11 and CLU11
     self.lkas11 = copy.copy(cp_cam.vl["LKAS11"])
     self.clu11 = copy.copy(cp.vl["CLU11"])
@@ -243,15 +272,6 @@ class CarState(CarStateBase):
     self.is_highway = cp.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
 
     self.hda_signal1 = cp.vl["HDA11_MFC"]["NEW_SIGNAL_1"]  # != 0.
-    
-
-    if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
-      self.enable_status = False
-    else:
-      self.enable_status = ret.cruiseState.enabled
-
-    if not self.cruise_enabled_btn( ret.cruiseState.enabled, ret.vEgo ):
-      ret.cruiseState.enabled = False      
     
     return ret
 
