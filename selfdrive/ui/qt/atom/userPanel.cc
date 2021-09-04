@@ -189,37 +189,23 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
          // }
   });
 
-  auto tmapopen_exe = new ButtonControl("NAVI Open", "Open",
-                                   "NAVI 을 실행 합니다.");
+  auto tmapopen_exe = new ButtonControl("주행로그 전부 삭제", "실행");
   connect(tmapopen_exe, &ButtonControl::clicked, [=]() 
   { 
-         // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Open)?", this)) 
-         // {
-            Params().put("OpkrMapEnable", "1");
-          //}
+      const char* realdata_del = "rm -rf /storage/emulated/0/realdata/*";
+      if (ConfirmationDialog::confirm("저장된 주행로그를 모두 삭제합니다. 진행하시겠습니까?", this)){
+        std::system(realdata_del);
+      }
   });
 
-  auto tmapopen2_exe = new ButtonControl("NAVI Overlay", "Open",
-                                   "NAVI2 실행후 Overlay mode로 변경합니다.");
-  connect(tmapopen2_exe, &ButtonControl::clicked, [=]() 
-  { 
-       // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI2 Open)?", this)) 
-       // {
-          Params().put("OpkrMapEnable", "2");
-       // }
-  });  
 
-  auto tmapclose_exe = new ButtonControl("NAVI Return", "Close",
+  auto tmapclose_exe = new ButtonControl("NAVI Return", "Open",
                                    "NAVI을 Return 합니다.");
   connect(tmapclose_exe, &ButtonControl::clicked, [=]() 
   { 
-          //if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Close)?", this)) 
-          //{
-            Params().put("OpkrMapEnable", "3");
-
-            //Params().put("OpkrMapEnable", "0");  // NAVI program exit.
-          //}
+    std::system("am start --activity-task-on-home com.mnsoft.mappyobn/com.mnsoft.mappy.MainActivity");
   });
+
 
   auto softkey_exe = new ButtonControl("Soft Key Open", "Open",
                                    "Soft Key 을 실행 합니다.");
