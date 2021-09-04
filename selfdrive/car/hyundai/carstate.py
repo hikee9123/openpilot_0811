@@ -63,7 +63,7 @@ class CarState(CarStateBase):
       if self.engage_enable:
         return True
       elif ret.vEgo < 5 or ret.steeringPressed:   # 15 km/h
-        self.time_delay_int = 100
+        self.time_delay_int = 1000
       elif self.time_delay_int > 0:
         self.time_delay_int -= 1
       else:
@@ -73,7 +73,9 @@ class CarState(CarStateBase):
     self.cruise_buttons_old = self.cruise_buttons
 
     if status_flag == 1:
-      self.engage_enable = False    
+      self.engage_enable = False
+    elif self.acc_mode:
+      return  self.engage_enable
     elif self.cruise_buttons == Buttons.GAP_DIST:
       self.engage_enable = True
       self.enagage_status = 1
