@@ -272,7 +272,7 @@ class CarState(CarStateBase):
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
     self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
-    self.is_highway = cp_cam.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
+    self.is_highway = cp.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
 
     self.hda_signal1 = self.lfahda["HDA_Icon_State"]  # != 0.
     
