@@ -199,16 +199,14 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
   });
 
 
-  auto tmapclose_exe = new ButtonControl("NAVI Return", "Open",
-                                   "NAVI을 Return 합니다.");
+  auto tmapclose_exe = new ButtonControl("NAVI Return", "Open","NAVI을 Return 합니다.");
   connect(tmapclose_exe, &ButtonControl::clicked, [=]() 
   { 
     std::system("am start --activity-task-on-home com.mnsoft.mappyobn/com.mnsoft.mappy.MainActivity");
   });
 
 
-  auto softkey_exe = new ButtonControl("Soft Key Open", "Open",
-                                   "Soft Key 을 실행 합니다.");
+  auto softkey_exe = new ButtonControl("Soft Key Open", "Open","Soft Key 을 실행 합니다.");
   connect(softkey_exe, &ButtonControl::clicked, [=]() 
   { 
          // if (ConfirmationDialog::confirm("Are you sure you want to exec(Soft Key)?", this)) 
@@ -218,7 +216,7 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
           //}
   });  
 
-  for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapopen2_exe, tmapclose_exe, softkey_exe}) {
+  for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapclose_exe, softkey_exe}) {
     if (btn) {
       layout()->addWidget(horizontal_line());
       connect(parent, SIGNAL(offroadTransition(bool)), btn, SLOT(setEnabled(bool)));
