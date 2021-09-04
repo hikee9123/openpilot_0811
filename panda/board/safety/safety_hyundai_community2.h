@@ -10,6 +10,7 @@ const CanMsg HYUNDAI_COMMUNITY_TX_MSGS[] = {
   {832, 0, 8},  // LKAS11 Bus 0
   {1265, 0, 4}, // CLU11 Bus 0
   {1157, 0, 4}, // LFAHDA_MFC Bus 0
+  {593, 2, 8},  // MDPS12, Bus 2
   // {1056, 0, 8}, //   SCC11,  Bus 0
   // {1057, 0, 8}, //   SCC12,  Bus 0
   // {1290, 0, 8}, //   SCC13,  Bus 0
@@ -264,6 +265,11 @@ static void hyundai_community_init(int16_t param) {
   controls_allowed = false;
   relay_malfunction_reset();
 
+
+  if (current_board->has_obd && HKG_forward_obd) {
+    current_board->set_can_mode(CAN_MODE_OBD_CAN2);
+    puts("  MDPS or SCC on OBD2 CAN: setting can mode obd\n");
+  }
   //hyundai_community = true;
   hyundai_community_ev_gas_signal = GET_FLAG(param, HYUNDAI_COMMUNITY_PARAM_EV_GAS);
   hyundai_community_hybrid_gas_signal = !hyundai_community_ev_gas_signal && GET_FLAG(param, HYUNDAI_COMMUNITY_PARAM_HYBRID_GAS);

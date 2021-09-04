@@ -2,7 +2,7 @@
 #include "safety_declarations.h"
 // Include the actual safety policies.
 //#include "safety/safety_defaults.h"
-#include "safety/safety_defaults_HKG.h"
+#include "safety/safety_defaults_HKG2.h"
 #include "safety/safety_honda.h"
 #include "safety/safety_toyota.h"
 #include "safety/safety_tesla.h"
@@ -16,7 +16,7 @@
 #include "safety/safety_nissan.h"
 #include "safety/safety_volkswagen.h"
 #include "safety/safety_elm327.h"
-#include "safety/safety_hyundai_community.h"
+#include "safety/safety_hyundai_community2.h"
 
 // from cereal.car.CarParams.SafetyModel
 #define SAFETY_SILENT 0U
