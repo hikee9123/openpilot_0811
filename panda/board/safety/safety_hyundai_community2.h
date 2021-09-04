@@ -266,7 +266,7 @@ static void hyundai_community_init(int16_t param) {
   relay_malfunction_reset();
 
 
-  if (current_board->has_obd && HKG_forward_obd) {
+  if (current_board->has_obd ) {
     current_board->set_can_mode(CAN_MODE_OBD_CAN2);
     puts("  MDPS or SCC on OBD2 CAN: setting can mode obd\n");
   }
