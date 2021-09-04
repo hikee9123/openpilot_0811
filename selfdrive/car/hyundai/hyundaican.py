@@ -82,7 +82,8 @@ def create_hda_mfc(packer, active ):
   values = {
     "HDA_USM": 2,
     "HDA_Active": 1 if active > 0 else 0,
-    "HDA_Icon_State": active  # if active > 0 else 0,
+    "HDA_Icon_State": active,  # if active > 0 else 0,
+    "NEW_SIGNAL_1": 6 if active > 1 else 0
   }
   #  HDA_Icon_State  2 HDA active(auto green), 1 HDA available, 0  HDA not available
   # HDA_USM 2 = ?
@@ -90,19 +91,6 @@ def create_hda_mfc(packer, active ):
   # HDA_Icon_State 0 = HDA not available
   # HDA_Icon_State 1 = HDA available
   # HDA_Icon_State 2 = HDA active
-
-  # HDA_VSetReq = HDA speed limit
-
-  # LFA_SysWarning 0 = normal
-  # LFA_SysWarning 1 = "Switching to HDA", short beep
-  # LFA_SysWarning 2 = "Switching to Smart Cruise control", short beep
-  # LFA_SysWarning 3 =  LFA error
-
-  # LFA_Icon_State 0 = no wheel
-  # LFA_Icon_State 1 = white wheel
-  # LFA_Icon_State 2 = green wheel
-
-  # LFA_USM 2 = ?
 
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 

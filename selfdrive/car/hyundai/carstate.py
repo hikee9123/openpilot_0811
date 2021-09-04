@@ -259,6 +259,7 @@ class CarState(CarStateBase):
     ret.cruiseState.enabled = self.engage_control( ret )
 
     # save the entire LKAS11 and CLU11
+    self.lfahda = copy.copy(cp_cam.vl["LFAHDA_MFC"])
     self.lkas11 = copy.copy(cp_cam.vl["LKAS11"])
     self.clu11 = copy.copy(cp.vl["CLU11"])
     self.mdps12 = copy.copy(cp.vl["MDPS12"])
@@ -271,9 +272,9 @@ class CarState(CarStateBase):
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
     self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
-    self.is_highway = cp.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
+    self.is_highway = cp_cam.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
 
-    self.hda_signal1 = cp.vl["HDA11_MFC"]["NEW_SIGNAL_1"]  # != 0.
+    self.hda_signal1 = self.lfahda["HDA_Icon_State"]  # != 0.
     
     return ret
 
@@ -345,8 +346,10 @@ class CarState(CarStateBase):
       ("ACCMode", "SCC12", 1),
 
       ("Navi_SCC_Camera_Act", "SCC11", 0),
-      ("NEW_SIGNAL_1", "HDA11_MFC", 0),
       ("TauGapSet", "SCC11", 4),
+
+
+
 
       # TPMS
       ("UNIT", "TPMS11", 0),
@@ -373,7 +376,6 @@ class CarState(CarStateBase):
       ("SCC12", 50),
 
       ("TPMS11", 0),
-      ("HDA11_MFC", 0),
     ]
 
 
@@ -467,10 +469,16 @@ class CarState(CarStateBase):
       ("CF_Lkas_FusionState", "LKAS11", 0),
       ("CF_Lkas_FcwOpt_USM", "LKAS11", 0),
       ("CF_Lkas_LdwsOpt_USM", "LKAS11", 0),
+
+      ("HDA_USM", "LFAHDA_MFC", 0),
+      ("HDA_Active", "LFAHDA_MFC", 0),
+      ("HDA_Icon_State", "LFAHDA_MFC", 0),
+      ("NEW_SIGNAL_1", "LFAHDA_MFC", 0),      
     ]
 
     checks = [
       ("LKAS11", 100)
+      ("LFAHDA_MFC", 20),      
     ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
