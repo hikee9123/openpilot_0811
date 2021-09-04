@@ -84,6 +84,7 @@ def create_hda_mfc(packer, active ):
     "HDA_Active": 1 if active > 0 else 0,
     "HDA_Icon_State": active,  # if active > 0 else 0,
     "NEW_SIGNAL_1": 6 if active > 1 else 0
+    "HDA_VSetReq": 50,
   }
   #  HDA_Icon_State  2 HDA active(auto green), 1 HDA available, 0  HDA not available
   # HDA_USM 2 = ?
