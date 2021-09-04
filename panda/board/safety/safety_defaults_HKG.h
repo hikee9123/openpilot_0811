@@ -13,7 +13,7 @@ int default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   int bus = GET_BUS(to_push);
   int addr = GET_ADDR(to_push);
 
-  if (addr == 832) {
+  if (addr == 832) {  // LKAS11(832)
     if (bus == 0) { HKG_LKAS_bus0_cnt = 10; if (HKG_forward_bus2) {HKG_forward_bus2 = false; puts("  LKAS on bus0: forwarding disabled\n");}}
     if (bus == 2) {
       if (HKG_LKAS_bus0_cnt > 0) {HKG_LKAS_bus0_cnt--;} else if (!HKG_forward_bus2) {HKG_forward_bus2 = true; puts("  LKAS on bus2 & not on bus0: forwarding enabled\n");}
@@ -37,7 +37,7 @@ int default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
   }
   // check if we have a MDPS or SCC on Bus1
-  if (bus == 1 && (addr == 593 || addr == 897 || addr == 1057)) {
+  if (bus == 1 && (addr == 593 || addr == 897 || addr == 1057)) {  // MDPS(593)  MDPS11(897)  SCC12(1057)
     if (!HKG_forward_bus1 && HKG_obd_int_cnt > 1 && HKG_obd_int_cnt < 11 && current_board->has_obd) {
       HKG_forward_obd = true; HKG_obd_int_cnt = 0; puts("  MDPS or SCC on OBD2 CAN: setting can mode obd\n");
     }
@@ -45,7 +45,7 @@ int default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       HKG_forward_bus1 = true; puts("  MDPS or SCC on bus1: forwarding enabled\n");
     }
   }
-  if ((addr == 593) && (HKG_MDPS12_checksum == -1)){
+  if ((addr == 593) && (HKG_MDPS12_checksum == -1)){    // MDPS12(593)
     int New_Chksum2 = 0;
     uint8_t dat[8];
     for (int i=0; i<8; i++) {
@@ -106,7 +106,7 @@ static int default_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
     bus_fwd = (HKG_forward_bus1 || HKG_forward_obd) ? 10 : 0;
   }
     // Code for LKA/LFA/HDA anti-nagging.
-  if (addr == 593 && bus_fwd != -1) {
+  if (addr == 593 && bus_fwd != -1) {   // MDPS12(593)
     uint8_t dat[8];
     int New_Chksum2 = 0;
     for (int i=0; i<8; i++) {

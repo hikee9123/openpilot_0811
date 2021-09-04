@@ -182,11 +182,7 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
                                    "run_mixplorer.sh 을 실행 합니다.");
   connect(mixplorer_exe, &ButtonControl::clicked, [=]() 
   { 
-        //  if (ConfirmationDialog::confirm("Are you sure you want to exec(com.mixplorer)?", this)) 
-        //  {
-              //std::system("/data/openpilot/run_mixplorer.sh");
-              std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
-         // }
+        std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
   });
 
   auto tmapopen_exe = new ButtonControl("주행로그 전부 삭제", "실행");
@@ -209,11 +205,7 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
   auto softkey_exe = new ButtonControl("Soft Key Open", "Open","Soft Key 을 실행 합니다.");
   connect(softkey_exe, &ButtonControl::clicked, [=]() 
   { 
-         // if (ConfirmationDialog::confirm("Are you sure you want to exec(Soft Key)?", this)) 
-          //{
-            //std::system("pm enable com.gmd.hidesoftkeys")
-            std::system("am start com.gmd.hidesoftkeys/com.gmd.hidesoftkeys.MainActivity");
-          //}
+    std::system("am start com.gmd.hidesoftkeys/com.gmd.hidesoftkeys.MainActivity");
   });  
 
   for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapclose_exe, softkey_exe}) {
