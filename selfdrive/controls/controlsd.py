@@ -585,8 +585,8 @@ class Controls:
     if not self.read_only and self.initialized:
       # send car controls over can
       can_sends = self.CI.apply(CC)
-      #if self.openpilot_mode:
-      self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
+      if self.openpilot_mode:
+        self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
                   (self.state == State.softDisabling)
@@ -687,7 +687,7 @@ class Controls:
     # atom
     if self.read_only:
       self.openpilot_mode = 0
-    elif CS.cruiseState.enabled:
+    elif CS.cruiseState.available:
       self.openpilot_mode = 50
 
 
@@ -707,7 +707,7 @@ class Controls:
     self.publish_logs(CS, start_time, actuators, lac_log)
     self.prof.checkpoint("Sent")
 
-    if not CS.cruiseState.enabled and self.openpilot_mode:
+    if not CS.cruiseState.available and self.openpilot_mode:
       if self.openpilot_mode > 0:
         self.openpilot_mode -= 1
       else:

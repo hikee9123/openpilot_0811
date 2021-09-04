@@ -49,7 +49,7 @@ class CarState(CarStateBase):
 
   def engage_control( self, ret ):
     status_flag = 0
-    if not self.cruise_available or ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
+    if not ret.cruiseState.available or ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
       status_flag = 1
       self.enagage_status = 0
       self.engage_enable = False
@@ -93,19 +93,22 @@ class CarState(CarStateBase):
       self.cruise_set_speed_kph = self.clu_Vanz
 
     set_speed_kph = self.cruise_set_speed_kph
-    if not self.prev_acc_set_btn:
-      self.prev_acc_set_btn = self.acc_active
-      if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
-        self.cruise_set_speed_kph = self.VSetDis
-      else:
-        self.cruise_set_speed_kph = self.clu_Vanz
-
+    if not self.cruise_available:
       if self.prev_clu_CruiseSwState != self.cruise_buttons:
         self.prev_clu_CruiseSwState = self.cruise_buttons
         if self.cruise_buttons == Buttons.GAP_DIST:
           self.cruise_set_mode += 1
           if self.cruise_set_mode > 2:
             self.cruise_set_mode = 0
+      return self.cruise_set_speed_kph
+
+
+    if not self.prev_acc_set_btn:
+      self.prev_acc_set_btn = self.acc_active
+      if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
+        self.cruise_set_speed_kph = self.VSetDis
+      else:
+        self.cruise_set_speed_kph = self.clu_Vanz
       return self.cruise_set_speed_kph
 
     elif self.prev_acc_set_btn != self.acc_active:
@@ -196,16 +199,19 @@ class CarState(CarStateBase):
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
     ret.cruiseState.cruiseSwState = self.cruise_buttons
     ret.cruiseState.modeSel = self.cruise_set_mode
-    #if self.CP.openpilotLongitudinalControl:
-    #  ret.cruiseState.available = cp.vl["TCS13"]["ACCEnable"] == 0
-    #  ret.cruiseState.enabled = cp.vl["TCS13"]["ACC_REQ"] == 1
-    #  ret.cruiseState.standstill = False
-    #else:
-    ret.cruiseState.available = cp.vl["SCC11"]["MainMode_ACC"] == 1
-    ret.cruiseState.enabled = cp.vl["SCC12"]["ACCMode"] != 0
+
+
+    self.cruise_available = cp.vl["SCC11"]["MainMode_ACC"] == 1
+    self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0
+    if self.cruise_set_mode == 2:
+      ret.cruiseState.available = False
+    else:
+      ret.cruiseState.available = self.cruise_available
     ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
-    self.cruise_available = ret.cruiseState.available
-    self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0    
+
+
+
+    
 
 
     set_speed = self.cruise_speed_button()
