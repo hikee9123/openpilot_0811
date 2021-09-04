@@ -477,7 +477,7 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      ("LKAS11", 100)
+      ("LKAS11", 100),
       ("LFAHDA_MFC", 20),      
     ]
 
