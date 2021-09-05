@@ -202,7 +202,7 @@ class CarController():
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled))
       elif self.car_fingerprint in FEATURES["send_hda_mfa"]:
-        can_sends.append(create_hda_mfc(self.packer, enabled, CS.lfahda, CS ))
+        can_sends.append(create_hda_mfc(self.packer, enabled, CS.lfahda, CS, c ))
         
 
 
