@@ -483,6 +483,7 @@ def ws_recv(ws, end_event):
   while not end_event.is_set():
     try:
       opcode, data = ws.recv_data(control_frame=True)
+      print( "athenad.py => {} ".format( opcode ) )
       if opcode in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
         if opcode == ABNF.OPCODE_TEXT:
           data = data.decode("utf-8")
