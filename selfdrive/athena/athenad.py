@@ -484,7 +484,7 @@ def ws_recv(ws, end_event):
   while not end_event.is_set():
     try:
       opcode, data = ws.recv_data(control_frame=True)
-      print( "athenad.py => {} ".format( opcode ) )
+      print( "athenad.py => {} ABNF.OPCODE_PING={}".format( opcode, ABNF.OPCODE_PING ) )
       if opcode in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
         if opcode == ABNF.OPCODE_TEXT:
           data = data.decode("utf-8")
@@ -550,7 +550,7 @@ def main():
   conn_retries = 0
   while 1:
     try:
-      print( " athenad.py => {} ".format( ws_uri ) )
+      print( " athenad.py => {} ABNF.OPCODE_PING={}".format( ws_uri, ABNF.OPCODE_PING ) )
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
       ws = create_connection(ws_uri,
                              cookie="jwt=" + api.get_token(),
