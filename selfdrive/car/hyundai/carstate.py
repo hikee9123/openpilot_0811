@@ -477,7 +477,8 @@ class CarState(CarStateBase):
       ("HDA_USM", "LFAHDA_MFC", 0),
       ("HDA_Active", "LFAHDA_MFC", 0),
       ("HDA_Icon_State", "LFAHDA_MFC", 0),
-      ("NEW_SIGNAL_1", "LFAHDA_MFC", 0),      
+      ("HDA_Icon_State", "LFAHDA_MFC", 0),
+      ("HDA_Icon_Weel", "LFAHDA_MFC", 0),
     ]
 
     checks = [
