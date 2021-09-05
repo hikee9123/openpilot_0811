@@ -31,7 +31,10 @@ from selfdrive.loggerd.xattr_cache import getxattr, setxattr
 from selfdrive.swaglog import cloudlog, SWAGLOG_DIR
 from selfdrive.version import get_version, get_git_remote, get_git_branch, get_git_commit
 
-ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040')
+#ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040')
+ATHENA_HOST = os.getenv('ATHENA_HOST', 'http://api.retropilot.org/useradmin/device/b20179b6')
+
+ # http://api.retropilot.org/useradmin/device/b20179b6
 HANDLER_THREADS = int(os.getenv('HANDLER_THREADS', "4"))
 LOCAL_PORT_WHITELIST = set([8022])
 
@@ -470,7 +473,9 @@ def main():
   params = Params()
   dongle_id = params.get("DongleId", encoding='utf-8')
 
-  ws_uri = ATHENA_HOST + "/ws/v2/" + dongle_id
+  #ws_uri = ATHENA_HOST + "/ws/v2/" + dongle_id
+  ws_uri = ATHENA_HOST + "/useradmin/device/" + dongle_id
+  
   api = Api(dongle_id)
  
   conn_retries = 0
