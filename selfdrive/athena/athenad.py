@@ -11,6 +11,8 @@ import select
 import socket
 import threading
 import time
+import jwt
+
 from collections import namedtuple
 from functools import partial
 from typing import Any
@@ -18,10 +20,11 @@ from typing import Any
 import requests
 from jsonrpc import JSONRPCResponseManager, dispatcher
 from websocket import ABNF, WebSocketTimeoutException, WebSocketException, create_connection
-
+from datetime import datetime, timedelta
 import cereal.messaging as messaging
 from cereal.services import service_list
 from common.api import Api
+from common.api import api_get
 from common.basedir import PERSIST
 from common.params import Params
 from common.realtime import sec_since_boot
@@ -251,6 +254,13 @@ def getPublicKey():
   with open(PERSIST + '/comma/id_rsa.pub', 'r') as f:
     return f.read()
 
+@dispatcher.add_method
+def getPrivateKey():
+  if not os.path.isfile(PERSIST + '/comma/id_rsa'):
+    return None  
+
+  with open(PERSIST + '/comma/id_rsa', 'r') as f:
+    return f.read()
 
 @dispatcher.add_method
 def getSshAuthorizedKeys():
@@ -474,23 +484,36 @@ def main():
   api = Api(dongle_id)
 
   conn_retries = 0
+  serial = HARDWARE.get_serial()
+  public_key = getPublicKey()
+  private_key = getPrivateKey()
+  register_token = jwt.encode({'register': True, 'exp': datetime.utcnow() + timedelta(hours=1)}, private_key, algorithm='RS256')
+  try:
+    imei1, imei2 = HARDWARE.get_imei(0), HARDWARE.get_imei(1)
+  except Exception:
+    cloudlog.exception("Error getting imei, trying again...")
+    time.sleep(1)
+
   while 1:
     try:
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
 
-      url_resp = api.get("v1.3/"+dongle_id+"/upload_url/", timeout=10, path="", access_token=api.get_token())
-      print("athenad.py =>  url_resp.status_code={}".format(  url_resp.status_code) ) 
+      #url_resp = api.get("v1.3/"+dongle_id+"/upload_url/", timeout=10, path="", access_token=api.get_token())
+      resp = api_get("v2/pilotauth/", method='POST', timeout=15,
+                       imei=imei1, imei2=imei2, serial=serial, public_key=public_key, register_token=register_token)
+
+      print("athenad.py =>  resp.status_code={}".format(  resp.status_code) ) 
      
-      ws = create_connection(ws_uri,
-                             cookie="jwt=" + api.get_token(),
-                             enable_multithread=True,
-                             timeout=30.0)
+      #ws = create_connection(ws_uri,
+      #                       cookie="jwt=" + api.get_token(),
+      #                       enable_multithread=True,
+      #                       timeout=30.0)
       cloudlog.event("athenad.main.connected_ws", ws_uri=ws_uri)
 
       manage_tokens(api)
 
       conn_retries = 0
-      handle_long_poll(ws)
+      #handle_long_poll(ws)
     except (KeyboardInterrupt, SystemExit):
       cloudlog.exception("athenad.main.KeyboardInterrupt")
       break
