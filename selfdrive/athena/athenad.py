@@ -499,7 +499,7 @@ def main():
       conn_retries += 1
       params.delete("LastAthenaPingTime")
 
-      #last_ping = int(sec_since_boot() * 1e9)
+      last_ping = int(sec_since_boot() * 1e9)
       #Params().put("LastAthenaPingTime", str(last_ping))
       print("athenad.py => LastAthenaPingTime={}".format( last_ping) ) 
     except Exception:
