@@ -474,6 +474,7 @@ def main():
  
   conn_retries = 0
   while 1:
+    print( "athenad.py => {}".format( ws_uri ) )
     try:
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
       ws = create_connection(ws_uri,
