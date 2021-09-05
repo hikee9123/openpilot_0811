@@ -133,7 +133,7 @@ def manager_thread():
     subprocess.call("./bootlog", cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
   else:
     ignore += ["loggerd","logmessaged","deleter","tombstoned","uploader","updated","androidd","rtshield"]
-    ignore += ["manage_athenad","proclogd","clocksd","timezoned"]
+    # ignore += ["manage_athenad","proclogd","clocksd","timezoned"]
 
 
   if params.get("DongleId", encoding='utf8') == UNREGISTERED_DONGLE_ID:
