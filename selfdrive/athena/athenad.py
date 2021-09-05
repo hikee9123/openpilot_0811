@@ -237,7 +237,7 @@ def main():
         params.delete("LastAthenaPingTime")
         cloudlog.info(f"Unable to register device, got {resp.status_code}")
         #dongle_id = UNREGISTERED_DONGLE_ID
-      else:
+      else:   # 200
         last_ping = int(sec_since_boot() * 1e9)
         Params().put("LastAthenaPingTime", str(last_ping))
         
