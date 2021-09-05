@@ -101,7 +101,7 @@ def create_hda_mfc(packer, active, lfahda, CS ):
 
   values["HDA_Icon_State"] = icon_state
   values["NEW_SIGNAL_1"] = signal  if active else 0
-
+  
   """
   values = {
     "HDA_USM": 2,
