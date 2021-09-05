@@ -23,7 +23,6 @@ from websocket import ABNF, WebSocketTimeoutException, WebSocketException, creat
 from datetime import datetime, timedelta
 import cereal.messaging as messaging
 from cereal.services import service_list
-from common.api import Api
 from common.api import api_get
 from common.basedir import PERSIST
 from common.params import Params
@@ -34,22 +33,19 @@ from selfdrive.loggerd.xattr_cache import getxattr, setxattr
 from selfdrive.swaglog import cloudlog, SWAGLOG_DIR
 from selfdrive.version import get_version, get_git_remote, get_git_branch, get_git_commit
 
-ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040')
-HANDLER_THREADS = int(os.getenv('HANDLER_THREADS', "4"))
-LOCAL_PORT_WHITELIST = set([8022])
 
 LOG_ATTR_NAME = 'user.upload'
 LOG_ATTR_VALUE_MAX_UNIX_TIME = int.to_bytes(2147483647, 4, sys.byteorder)
-RECONNECT_TIMEOUT_S = 70
+
 
 dispatcher["echo"] = lambda s: s
-recv_queue: Any = queue.Queue()
-send_queue: Any = queue.Queue()
-upload_queue: Any = queue.Queue()
+
+
+
 log_send_queue: Any = queue.Queue()
 log_recv_queue: Any = queue.Queue()
-cancelled_uploads: Any = set()
-UploadItem = namedtuple('UploadItem', ['path', 'url', 'headers', 'created_at', 'id'])
+
+
 
 
 
@@ -220,10 +216,6 @@ def backoff(retries):
 
 def main():
   params = Params()
-  dongle_id = params.get("DongleId", encoding='utf-8')
-
-  ws_uri = ATHENA_HOST + "/ws/v2/" + dongle_id
-  api = Api(dongle_id)
 
   conn_retries = 0
   serial = HARDWARE.get_serial()
@@ -238,14 +230,9 @@ def main():
 
   while 1:
     try:
-      #cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
-
-      #url_resp = api.get("v1.3/"+dongle_id+"/upload_url/", timeout=10, path="", access_token=api.get_token())
       resp = api_get("v2/pilotauth/", method='POST', timeout=15,
                        imei=imei1, imei2=imei2, serial=serial, public_key=public_key, register_token=register_token)
 
-      
-    
       if resp.status_code in (402, 403):
         params.delete("LastAthenaPingTime")
         cloudlog.info(f"Unable to register device, got {resp.status_code}")
@@ -259,7 +246,7 @@ def main():
         print("athenad.py =>  resp.status_code={}  dongle_id={}".format( resp.status_code, dongle_id) ) 
 
 
-      conn_retries = 2
+      conn_retries = 3
 
     except (KeyboardInterrupt, SystemExit):
       cloudlog.exception("athenad.main.KeyboardInterrupt")
