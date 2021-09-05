@@ -477,6 +477,10 @@ def main():
   while 1:
     try:
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
+
+      url_resp = api.get("v1.3/"+dongle_id+"/upload_url/", timeout=10, path="", access_token=api.get_token())
+      print("athenad.py =>  url_resp.status_code={}".format(  url_resp.status_code) ) 
+     
       ws = create_connection(ws_uri,
                              cookie="jwt=" + api.get_token(),
                              enable_multithread=True,
