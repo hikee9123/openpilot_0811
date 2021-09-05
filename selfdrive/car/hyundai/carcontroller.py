@@ -152,7 +152,7 @@ class CarController():
     str_log1 = 'engage={:2.0f} {:2.0f} LKAS={:2.0f}'.format( CS.engage_enable, CS.enagage_status, CS.lkas_button_on  )
     trace1.printf2( '{}'.format( str_log1 ) )
 
-    str_log1 = 'MODE={:.0f} GAP={:.0f} H1={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet,  CS.hda_signal1  )
+    str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway  )
     trace1.printf3( '{}'.format( str_log1 ) )
 
 
@@ -202,7 +202,7 @@ class CarController():
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled))
       elif self.car_fingerprint in FEATURES["send_hda_mfa"]:
-        can_sends.append(create_hda_mfc(self.packer, enabled, CS.lfahda, CS, c ))
+        can_sends.append(create_hda_mfc(self.packer, CS, c ))
         
 
 
