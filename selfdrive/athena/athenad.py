@@ -503,6 +503,11 @@ def main():
                        imei=imei1, imei2=imei2, serial=serial, public_key=public_key, register_token=register_token)
 
       print("athenad.py =>  resp.status_code={}".format(  resp.status_code) ) 
+      if resp.status_code == 200:
+        last_ping = int(sec_since_boot() * 1e9)
+        Params().put("LastAthenaPingTime", str(last_ping))
+      else:
+        params.delete("LastAthenaPingTime")
      
       #ws = create_connection(ws_uri,
       #                       cookie="jwt=" + api.get_token(),
@@ -510,9 +515,9 @@ def main():
       #                       timeout=30.0)
       cloudlog.event("athenad.main.connected_ws", ws_uri=ws_uri)
 
-      manage_tokens(api)
+      #manage_tokens(api)
 
-      conn_retries = 0
+      conn_retries = 1
       #handle_long_poll(ws)
     except (KeyboardInterrupt, SystemExit):
       cloudlog.exception("athenad.main.KeyboardInterrupt")
