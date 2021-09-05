@@ -17,6 +17,13 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   values["CF_Lkas_ActToi"] = steer_req
   values["CF_Lkas_MsgCount"] = frame % 0x10
 
+  if car_fingerprint in [CAR.GRANDEUR_HEV_19]:
+    values["CF_Lkas_SysWarning"] = 4 if sys_warning else 0
+
+
+    # CF_Lkas_SysWarning  4 keep hand on wheel
+    # CF_Lkas_SysWarning  9 keep hands on wheel (red) + beep
+
   if car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.KIA_NIRO_EV, CAR.KIA_NIRO_HEV_2021, CAR.SANTA_FE,
                          CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KIA_SELTOS, CAR.ELANTRA_2021,
                          CAR.ELANTRA_HEV_2021, CAR.SONATA_HYBRID, CAR.KONA_HEV]:
@@ -78,18 +85,36 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
   }
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
-def create_hda_mfc(packer, active, lfahda ):
+def create_hda_mfc(packer, active, lfahda, CS ):
   values = lfahda
+  wheel = 1 if active else 0
+  lanes = 6
+  signal = wheel + lanes
+
+  if CS.acc_mode:
+    icon_state = 2
+  elif active:
+    icon_state = 1
+  else:
+    icon_state = 0
+
+
+  values["HDA_Icon_State"] = icon_state
+  values["NEW_SIGNAL_1"] = signal  if active else 0
+
   """
   values = {
     "HDA_USM": 2,
-    "HDA_Active": 1 if active > 0 else 0,
     "HDA_Icon_State": active,  # if active > 0 else 0,
     "NEW_SIGNAL_1": 6 if active > 1 else 0,
   }
   """
-  #  HDA_Icon_State  2 HDA active(auto green), 1 HDA available, 0  HDA not available
+  #  HDA_Icon_State  2 HDA active, 1 HDA available, 0  HDA not available
   # HDA_USM 2 = ?
+
+  # HDA_Active    1 AUTO(icon)==HDA_VSetReq(highway limit speed), 0 HDA(icon)
+
+  # NEW_SIGNAL_1  0x01: wheel mark?, 0x02~0x03: lanes mark?
 
   # HDA_Icon_State 0 = HDA not available
   # HDA_Icon_State 1 = HDA available
@@ -169,7 +194,6 @@ def create_frt_radar_opt(packer):
   return packer.make_can_msg("FRT_RADAR11", 0, frt_radar11_values)
 
 def create_mdps12(packer, frame, mdps12):
-  #values = copy.deepcopy( mdps12 )
   values = mdps12
   values["CF_Mdps_ToiActive"] = 0
   values["CF_Mdps_ToiUnavail"] = 1

@@ -197,20 +197,12 @@ class CarController():
         self.resume_cnt = 0
 
 
-    if enabled:
-      if CS.acc_mode:
-        hda_active = 2
-      else:
-        hda_active = 1
-    else:
-      hda_active = 0
-
     # 20 Hz LFA MFA message
     if frame % 5 == 0:
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled))
       elif self.car_fingerprint in FEATURES["send_hda_mfa"]:
-        can_sends.append(create_hda_mfc(self.packer, hda_active, CS.lfahda))
+        can_sends.append(create_hda_mfc(self.packer, enabled, CS.lfahda, CS ))
         
 
 
