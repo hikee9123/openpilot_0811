@@ -32,7 +32,7 @@ from selfdrive.swaglog import cloudlog, SWAGLOG_DIR
 from selfdrive.version import get_version, get_git_remote, get_git_branch, get_git_commit
 
 #ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040')
-ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040'')
+ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://api.retropilot.org:4040')
 
  # http://api.retropilot.org/useradmin/device/b20179b6
 HANDLER_THREADS = int(os.getenv('HANDLER_THREADS', "4"))
