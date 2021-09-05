@@ -85,7 +85,7 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
   }
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
-def create_hda_mfc(packer, active, lfahda, CS ):
+def create_hda_mfc(packer, active, lfahda, CS, c ):
   values = lfahda
   wheel = 1 if active else 0
   lanes = 4   # 2 left  4 right
