@@ -88,7 +88,7 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
 def create_hda_mfc(packer, active, lfahda, CS ):
   values = lfahda
   wheel = 1 if active else 0
-  lanes = 2
+  lanes = 4   # 2 left  4 right
   signal = wheel + lanes
 
   if CS.acc_mode:
