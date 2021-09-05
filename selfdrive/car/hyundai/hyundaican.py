@@ -90,11 +90,11 @@ def create_hda_mfc(packer, CS, c ):
   enabled = c.enabled
 
   if CS.cruise_set_mode == 0:
-    LdwSysState = 0
+    ldwSysState = 0
     if c.hudControl.leftLaneVisible :
-      LdwSysState += 1
+      ldwSysState += 1
     if c.hudControl.rightLaneVisible:
-      LdwSysState += 2
+      ldwSysState += 2
 
     if CS.acc_mode:
       hda_icon_state = 2
@@ -105,7 +105,7 @@ def create_hda_mfc(packer, CS, c ):
 
     #values["HDA_Icon_Wheel"] = 1 if enabled else 0
     values["HDA_Icon_State"] = hda_icon_state
-    values["HDA_LdwSysState"] = LdwSysState
+    values["HDA_LdwSysState"] = ldwSysState
 
 
   values["HDA_Icon_Wheel"] = 1 if enabled else 0
