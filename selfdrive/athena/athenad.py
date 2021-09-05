@@ -483,6 +483,7 @@ def ws_recv(ws, end_event):
   while not end_event.is_set():
     try:
       opcode, data = ws.recv_data(control_frame=True)
+      print( " athenad.py => opcode={}".format(  opcode) )
       if opcode in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
         if opcode == ABNF.OPCODE_TEXT:
           data = data.decode("utf-8")
@@ -563,12 +564,15 @@ def main():
 
       handle_long_poll(ws)
     except (KeyboardInterrupt, SystemExit):
+      cloudlog.exception("athenad.main.KeyboardInterrupt")
       break
     except (ConnectionError, TimeoutError, WebSocketException):
       conn_retries += 1
+
+      cloudlog.exception("athenad.main.ConnectionError")
       # params.delete("PrimeRedirected")
       # params.delete("LastAthenaPingTime")
-    except socket.timeout:
+    #except socket.timeout:
       # try:
       #   r = requests.get("http://api.retropilot.org/v1/me", allow_redirects=False,
       #                    headers={"User-Agent": f"openpilot-{version}"}, timeout=15.0)
