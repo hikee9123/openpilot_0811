@@ -414,6 +414,7 @@ def ws_recv(ws, end_event):
   while not end_event.is_set():
     try:
       opcode, data = ws.recv_data(control_frame=True)
+      print( "athenad.py => ws.recv_data{}".format( opcode ) )
       if opcode in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
         if opcode == ABNF.OPCODE_TEXT:
           data = data.decode("utf-8")
@@ -488,18 +489,22 @@ def main():
       conn_retries = 0
       handle_long_poll(ws)
     except (KeyboardInterrupt, SystemExit):
+      print( "athenad.py => KeyboardInterrupt" )
       break
     except (ConnectionError, TimeoutError, WebSocketException):
+      print( "athenad.py => ConnectionError" )
       conn_retries += 1
       params.delete("LastAthenaPingTime")
       if TICI:
         cloudlog.exception("athenad.main.exception2")
     except Exception:
+      print( "athenad.py => Exception" )
       cloudlog.exception("athenad.main.exception")
 
       conn_retries += 1
       params.delete("LastAthenaPingTime")
 
+    print( "athenad.py => time{}".format( conn_retries ) )
     time.sleep(backoff(conn_retries))
 
 
