@@ -477,7 +477,7 @@ class CarState(CarStateBase):
       ("HDA_USM", "LFAHDA_MFC", 0),
       ("HDA_Active", "LFAHDA_MFC", 0),
       ("HDA_Icon_State", "LFAHDA_MFC", 0),
-      ("HDA_Icon_State", "LFAHDA_MFC", 0),
+      ("HDA_LdwSysState", "LFAHDA_MFC", 0),
       ("HDA_Icon_Wheel", "LFAHDA_MFC", 0),
     ]
 
