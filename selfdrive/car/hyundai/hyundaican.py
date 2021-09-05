@@ -87,8 +87,17 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
 
 def create_hda_mfc(packer, active, lfahda, CS, c ):
   values = lfahda
+
+  left_lane = c.hudControl.leftLaneVisible 
+  right_lane = c.hudControl.rightLaneVisible
   wheel = 1 if active else 0
-  lanes = 4   # 2 left  4 right
+
+  lanes = 0
+  if left_lane:
+    lanes += 2
+  if right_lane:
+    lanes += 4
+  #lanes = 4   # 2 left  4 right
   signal = wheel + lanes
 
   if CS.acc_mode:
@@ -99,7 +108,7 @@ def create_hda_mfc(packer, active, lfahda, CS, c ):
     icon_state = 0
 
 
-  values["HDA_Icon_State"] = icon_state
+  #values["HDA_Icon_State"] = icon_state
   values["NEW_SIGNAL_1"] = signal  if active else 0
   
   """
