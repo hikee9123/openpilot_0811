@@ -548,13 +548,14 @@ def main():
   conn_retries = 0
   while 1:
     try:
+      print( " athenad.py => {} ".format( ws_uri ) )
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
       ws = create_connection(ws_uri,
                              cookie="jwt=" + api.get_token(),
                              enable_multithread=True,
                              timeout=30.0)
       cloudlog.event("athenad.main.connected_ws", ws_uri=ws_uri)
-      params.delete("PrimeRedirected")
+      #params.delete("PrimeRedirected")
 
       manage_tokens(api)
 
@@ -566,14 +567,14 @@ def main():
       break
     except (ConnectionError, TimeoutError, WebSocketException):
       conn_retries += 1
-      params.delete("PrimeRedirected")
+      #params.delete("PrimeRedirected")
       params.delete("LastAthenaPingTime")
     except socket.timeout:
       try:
         r = requests.get("http://api.commadotai.com/v1/me", allow_redirects=False,
                          headers={"User-Agent": f"openpilot-{version}"}, timeout=15.0)
-        if r.status_code == 302 and r.headers['Location'].startswith("http://u.web2go.com"):
-          params.put_bool("PrimeRedirected", True)
+        #if r.status_code == 302 and r.headers['Location'].startswith("http://u.web2go.com"):
+        #  params.put_bool("PrimeRedirected", True)
       except Exception:
         cloudlog.exception("athenad.socket_timeout.exception")
       params.delete("LastAthenaPingTime")
@@ -581,7 +582,7 @@ def main():
       cloudlog.exception("athenad.main.exception")
 
       conn_retries += 1
-      params.delete("PrimeRedirected")
+      #params.delete("PrimeRedirected")
       params.delete("LastAthenaPingTime")
 
     time.sleep(backoff(conn_retries))
