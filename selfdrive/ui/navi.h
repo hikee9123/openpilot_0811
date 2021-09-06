@@ -95,7 +95,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     // 2. image
     if( traffic_sign  )
     {
-      float img_alpha = 0.3f;
+      float img_alpha = 0.9f;
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
     }
 
