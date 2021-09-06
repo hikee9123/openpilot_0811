@@ -124,14 +124,17 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       
       NVGcolor crFill = COLOR_BLACK_ALPHA(100); // nvgRGBA(255, 255, 255,100);
       
-      float fp[] = {255, 100, 0};
+      float fpR[] = {255, 255, 0};
+      float fpG[] = {0, 255, 0};
+      float fpB[] = {0, 0, 255};
       float xp[] = {200, 400, 600};
       int N = sizeof(xp) / sizeof(xp[0]);
       float x = speedLimitAheadDistance;
-      int nR = (int)interp( x, xp,  fp, N);
-      int nG = 255 - nR;
+      int nR = (int)interp( x, xp,  fpR, N);
+      int nG = (int)interp( x, xp,  fpG, N);
+      int nB = (int)interp( x, xp,  fpB, N);
       
-      crFill = nvgRGBA(nR, nG, 0, 100);
+      crFill = nvgRGBA(nR, nG, nB, 200);
       /*
       if( speedLimitAheadDistance < 200 ) 
         crFill = nvgRGBA(255, 0, 0,100);
@@ -208,21 +211,21 @@ static void ui_draw_navi(UIState *s)
   int   mapValid = scene.liveNaviData.getMapValid();
 
 
-   float dSec = scene.liveNaviData.getArrivalSec();
-   float dDistance = scene.liveNaviData.getArrivalDistance();
+   //float dSec = scene.liveNaviData.getArrivalSec();
+  // float dDistance = scene.liveNaviData.getArrivalDistance();
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
   if( mapValid )
   {
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 
-    nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
-    nvgFontSize(s->vg, 48);
-    int xpos = 250;
-    int ypos = 300;
-    nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-    ui_print(s, xpos, ypos, "AT:%.1f", dSec  );
-    ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
+    //nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+    //nvgFontSize(s->vg, 48);
+    //int xpos = 250;
+    //int ypos = 300;
+    //nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+    //ui_print(s, xpos, ypos, "AT:%.1f", dSec  );
+    //ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
   }
     
   

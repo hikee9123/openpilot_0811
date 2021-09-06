@@ -442,9 +442,11 @@ static void print_tpms(UIState *s, int x, int y, float tmps) {
   NVGcolor color = COLOR_WHITE_ALPHA(200);
   char szTPMS[64];
 
-  if ( tmps < 34)   {
+  if ( tmps < 31)   {
     color = COLOR_RED;
-  }   else if (tmps > 50)   {
+  } else if ( tmps < 34)   {
+    color = COLOR_YELLOW;
+  } else if (tmps > 50)   {
     color =  COLOR_WHITE_ALPHA(200);
   } 
 
