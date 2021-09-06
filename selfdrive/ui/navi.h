@@ -11,6 +11,42 @@ this is navigation code by OPKR, and thank you to the OPKR developer.
 I love OPKR code.
 */
 
+
+static float interp( float xv, float xp[], float fp[], int N)
+{
+	float dResult = 0; 
+	int low, hi = 0;
+
+	while ( (hi < N) && (xv > xp[hi]))
+	{
+		hi += 1;
+	}
+	low = hi - 1;
+	if( low < 0 )
+	{
+		low = N-1;
+		return fp[0];
+	}
+
+	if (hi == N && xv > xp[low])
+	{
+		return fp[N-1];
+	}
+	else
+	{
+		if( hi == 0 )
+		{
+			return fp[0];
+		}
+		else
+		{
+			dResult = (xv - xp[low]) * (fp[hi] - fp[low]) / (xp[hi] - xp[low]) + fp[low];
+			return dResult;
+		}
+	}
+	return  dResult;
+}
+
 static void ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
 
   if( font_name )
@@ -85,7 +121,27 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       int txt_xpos = img_xpos + 20;  
       int txt_ypos = img_ypos + img_size - 20;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
-      ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
+      
+      NVGcolor crFill = COLOR_BLACK_ALPHA(100); // nvgRGBA(255, 255, 255,100);
+      
+      float fp[] = {255, 100, 0};
+      float xp[] = {200, 400, 600};
+      int N = sizeof(xp) / sizeof(xp[0]);
+      float x = speedLimitAheadDistance;
+      int nR = (int)interp( x, xp,  fp, N);
+      int nG = 255 - nR;
+      
+      crFill = nvgRGBA(nR, nG, 0, 100);
+      /*
+      if( speedLimitAheadDistance < 200 ) 
+        crFill = nvgRGBA(255, 0, 0,100);
+      else  if( speedLimitAheadDistance < 400 ) 
+        crFill = nvgRGBA(100, 100, 0,100);
+      else 
+        crFill = nvgRGBA(0, 255, 0,100);
+       */
+      
+      ui_fill_rect(s->vg, rect, crFill, 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
 
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
