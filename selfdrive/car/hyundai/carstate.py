@@ -47,7 +47,9 @@ class CarState(CarStateBase):
     self.enagage_status = 0
     self.cruise_buttons_old = 0
 
-  def engage_control( self, ret ):
+  def engage_control( self, ret, c ):
+    left_lane = c.hudControl.leftLaneVisible 
+    right_lane = c.hudControl.rightLaneVisible     
     status_flag = 0
     if not ret.cruiseState.available or ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
       status_flag = 1
@@ -62,10 +64,10 @@ class CarState(CarStateBase):
     if self.cruise_buttons_old == self.cruise_buttons:
       if self.engage_enable:
         return True
-      elif ret.vEgo < 5:  # or ret.steeringPressed:   # 15 km/h
-        self.time_delay_int = 1000
       elif self.time_delay_int > 0:
         self.time_delay_int -= 1
+      elif ret.vEgo < 5 or not left_lane or not right_lane or ret.steeringPressed:  # 15 km/h
+        self.time_delay_int = 100
       else:
         self.engage_enable = True
       return  self.engage_enable
@@ -163,7 +165,7 @@ class CarState(CarStateBase):
     ret.tpms.rr *= unit_ratio
     return ret
 
-  def update(self, cp, cp_cam):
+  def update(self, cp, cp_cam, c):
     ret = car.CarState.new_message()
 
     ret.doorOpen = any([cp.vl["CGW1"]["CF_Gway_DrvDrSw"], cp.vl["CGW1"]["CF_Gway_AstDrSw"],
@@ -262,7 +264,7 @@ class CarState(CarStateBase):
       ret.rightBlindspot = cp.vl["LCA11"]["CF_Lca_IndRight"] != 0
 
     ret = self.update_tpms( cp, ret )
-    ret.cruiseState.enabled = self.engage_control( ret )
+    ret.cruiseState.enabled = self.engage_control( ret, c )
 
     # save the entire LKAS11 and CLU11
     self.lfahda = copy.copy(cp_cam.vl["LFAHDA_MFC"])
