@@ -148,7 +148,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
 
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-      ui_text(s, rect.centerX(), rect.centerY()+15, szSLD, 40, COLOR_WHITE, "sans-bold");
+      ui_text(s, rect.centerX(), rect.centerY()+15, szSLD, 40, COLOR_BLACK, "sans-bold");
     }
 
     // 2. image
