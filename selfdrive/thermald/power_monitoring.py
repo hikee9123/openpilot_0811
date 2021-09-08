@@ -207,7 +207,7 @@ class PowerMonitoring:
       return False
 
     print( "  usbPowerMode = {}  ".format( pandaState.pandaState.usbPowerMode) )
-    panda_charging = (pandaState.pandaState.usbPowerMode != log.PandaState.UsbPowerMode.client)
+    panda_charging = (pandaState.pandaState.usbPowerMode == log.PandaState.UsbPowerMode.cdp)
     BATT_PERC_OFF = 10  #10 if LEON else 3
 
     disable_charging = self.should_disable_charging(pandaState, offroad_timestamp)
