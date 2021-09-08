@@ -75,7 +75,7 @@ class CarState(CarStateBase):
       self.enagage_status = 2
       self.engage_enable = True
 
-    engage_disable_status = self.engage_disable()
+    engage_disable_status = self.engage_disable( ret )
     if self.cruise_buttons_old == self.cruise_buttons:
       if self.engage_enable:
         if engage_disable_status:
