@@ -455,8 +455,9 @@ def thermald_thread():
     should_start_prev = should_start
     startup_conditions_prev = startup_conditions.copy()
 
+    battery_changing = HARDWARE.get_battery_charging()
     usbOnline = HARDWARE.get_usb_present()
-    print( "  usb_power={}  usbOnline={}".format( usb_power, usbOnline ) )
+    print( "  usb_power={}  usbOnline={} battery_changing={}".format( usb_power, usbOnline, battery_changing ) )
     if usbOnline and usb_power:
       power_monitor.charging_ctrl( msg, ts, 60, 40 )    
 
