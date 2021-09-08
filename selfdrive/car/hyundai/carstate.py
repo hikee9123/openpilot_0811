@@ -47,6 +47,22 @@ class CarState(CarStateBase):
     self.enagage_status = 0
     self.cruise_buttons_old = 0
 
+    self.time_break = 0
+
+  def engage_disable( self, ret ):
+    steeringAngleDeg = abs( ret.steeringAngleDeg )
+
+    if ret.brakePressed:
+      self.time_break = 200
+    elif self.time_break > 0:
+      self.time_break -= 1
+
+    if not self.acc_mode and self.clu_Vanz < 30 and steeringAngleDeg > 10 and self.time_break and ret.steeringPressed:
+       return True
+
+
+    return False
+
   def engage_control( self, ret, c ):
     left_lane = c.hudControl.leftLaneVisible 
     right_lane = c.hudControl.rightLaneVisible     
@@ -63,7 +79,9 @@ class CarState(CarStateBase):
 
     if self.cruise_buttons_old == self.cruise_buttons:
       if self.engage_enable:
-        return True
+        if self.engage_disable(  ret ):
+            self.engage_enable = False
+        return self.engage_enable
       elif self.time_delay_int > 0:
         self.time_delay_int -= 1
 
