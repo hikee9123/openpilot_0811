@@ -214,8 +214,9 @@ class PowerMonitoring:
     should_shutdown |= (not panda_charging and self.should_disable_charging(pandaState, offroad_timestamp))
     print( "  power1 = {}  {}".format(panda_charging, should_shutdown) )
     should_shutdown |= (batteryPercent < BATT_PERC_OFF)
-    print( "  power2 = {}  {}".format(panda_charging, batteryPercent) )
+    print( "  power2 = {}  {}".format(batteryPercent, should_shutdown) )
     should_shutdown &= started_seen or (now > MIN_ON_TIME_S)
+    print( "  power3 = {}  {}".format(started_seen, should_shutdown) )
     return should_shutdown
 
 
