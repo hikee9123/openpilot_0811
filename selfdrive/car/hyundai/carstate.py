@@ -304,7 +304,7 @@ class CarState(CarStateBase):
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
-    self.lkas_button_on = cp.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
+    self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
     self.is_highway = self.lfahda["HDA_Icon_State"] != 0.
 
     self.Elect_Gear_Step = cp.vl["ELECT_GEAR"]["Elect_Gear_Step"]
