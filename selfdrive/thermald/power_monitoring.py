@@ -211,10 +211,11 @@ class PowerMonitoring:
     BATT_PERC_OFF = 10  #10 if LEON else 3
 
     disable_charging = self.should_disable_charging(pandaState, offroad_timestamp)
+    battery_changing = HARDWARE.get_battery_charging()
 
     should_shutdown = False
     # Wait until we have shut down charging before powering down
-    should_shutdown |= (not panda_charging and disable_charging)
+    should_shutdown |= (not panda_charging and not battery_changing)
     print( "  power1 = {}  {}".format(panda_charging, disable_charging) )
     should_shutdown |= (batteryPercent < BATT_PERC_OFF)
     print( "  power2 = {}  {}".format(batteryPercent, should_shutdown) )
