@@ -149,10 +149,10 @@ class CarController():
     self.apply_steer_last = apply_steer
     sys_warning, sys_state = self.process_hud_alert( lkas_active, c )
 
-    str_log1 = 'engage={:2.0f} {:2.0f} LKAS={:2.0f}'.format( CS.engage_enable, CS.enagage_status, CS.lkas_button_on  )
+    str_log1 = 'LKAS={:2.0f} EG={:.0f} SL={:.1f}'.format(  CS.lkas_button_on, CS.Elect_Gear_Step, CS.SpeedLim_Nav_Clu   )
     trace1.printf2( '{}'.format( str_log1 ) )
 
-    str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway  )
+    str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway )
     trace1.printf3( '{}'.format( str_log1 ) )
 
 

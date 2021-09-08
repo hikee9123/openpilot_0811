@@ -304,10 +304,12 @@ class CarState(CarStateBase):
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
-    self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
+    self.lkas_button_on = cp.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
     self.is_highway = self.lfahda["HDA_Icon_State"] != 0.
-    
-    return ret
+
+    self.Elect_Gear_Step = cp.vl["ELECT_GEAR"]["Elect_Gear_Step"]
+    self.SpeedLim_Nav_Clu = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"]
+
 
   @staticmethod
   def get_can_parser(CP):
@@ -388,6 +390,8 @@ class CarState(CarStateBase):
       ("PRESSURE_FR", "TPMS11", 0),
       ("PRESSURE_RL", "TPMS11", 0),
       ("PRESSURE_RR", "TPMS11", 0),
+
+      ("SpeedLim_Nav_Clu", "Navi_HU", 0),
     ]
 
     checks = [
@@ -406,7 +410,8 @@ class CarState(CarStateBase):
       ("SCC11", 50),
       ("SCC12", 50),
 
-      ("TPMS11", 0),
+      ("TPMS11", 5),
+      ("Navi_HU", 5),
     ]
 
 
@@ -455,6 +460,7 @@ class CarState(CarStateBase):
       ]
     elif CP.carFingerprint in FEATURES["use_elect_gears"]:
       signals += [("Elect_Gear_Shifter", "ELECT_GEAR", 0)]
+      signals += [("Elect_Gear_Step", "ELECT_GEAR", 0)]
       checks += [("ELECT_GEAR", 20)]
     else:
       signals += [
