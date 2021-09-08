@@ -188,7 +188,7 @@ class PowerMonitoring:
     now = sec_since_boot()    
     usbOnline = HARDWARE.get_usb_present()
     power_on_time = now - offroad_timestamp    
-    print( "  usbOnline = {}  ".format( usbOnline ) )
+    print( "  usbOnline = {}  power_on_time = {} ".format( usbOnline, power_on_time ) )
     if usbOnline or (power_on_time < OPKR_SHUTDOWN_TIME):
       self.power_on2_time = now
       return False
@@ -196,7 +196,8 @@ class PowerMonitoring:
       self.power_on2_time = now
 
     batteryPercent = HARDWARE.get_battery_capacity()
-    battery_power_on_time = now - self.power_on2_time 
+    battery_power_on_time = now - self.power_on2_time
+    print( "  batteryPercent = {}  battery_power_on_time={}".format( batteryPercent, battery_power_on_time ) )    
     if batteryPercent < 10:
       if battery_power_on_time > 10:
         return True
