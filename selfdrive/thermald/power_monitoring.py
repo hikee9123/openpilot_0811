@@ -205,6 +205,7 @@ class PowerMonitoring:
     if pandaState is None:
       return False
 
+    print( "  usbPowerMode = {}  ".format( pandaState.pandaState.usbPowerMode) )
     panda_charging = (pandaState.pandaState.usbPowerMode != log.PandaState.UsbPowerMode.client)
     BATT_PERC_OFF = 10  #10 if LEON else 3
 
