@@ -195,7 +195,7 @@ class PowerMonitoring:
     batteryPercent = HARDWARE.get_battery_capacity()
     battery_power_on_time = now - self.power_on2_time 
     if batteryPercent < 10:
-      if battery_power_on_time> 10:
+      if battery_power_on_time > 10:
         return True
 
  

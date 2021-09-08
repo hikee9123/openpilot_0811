@@ -53,11 +53,15 @@ class CarState(CarStateBase):
     steeringAngleDeg = abs( ret.steeringAngleDeg )
 
     if ret.brakePressed:
-      self.time_break = 200
+      self.time_break = 500
     elif self.time_break > 0:
       self.time_break -= 1
 
-    if not self.acc_mode and self.clu_Vanz < 30 and steeringAngleDeg > 10 and self.time_break and ret.steeringPressed:
+    limitAngleDeg = 40
+    if self.time_break:
+      limitAngleDeg = 10
+
+    if not self.acc_mode and self.clu_Vanz < 35 and steeringAngleDeg > limitAngleDeg and ret.steeringPressed:
        return True
 
     return False
