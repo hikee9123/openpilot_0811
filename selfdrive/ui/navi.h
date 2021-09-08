@@ -127,7 +127,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       float fpR[] = {255, 255, 0};
       float fpG[] = {0, 255, 0};
       float fpB[] = {0, 0, 255};
-      float xp[] = {200, 400, 600};
+      float xp[] = {100, 300, 500};
       int N = sizeof(xp) / sizeof(xp[0]);
       float x = speedLimitAheadDistance;
       int nR = (int)interp( x, xp,  fpR, N);
@@ -135,14 +135,6 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       int nB = (int)interp( x, xp,  fpB, N);
       
       crFill = nvgRGBA(nR, nG, nB, 200);
-      /*
-      if( speedLimitAheadDistance < 200 ) 
-        crFill = nvgRGBA(255, 0, 0,100);
-      else  if( speedLimitAheadDistance < 400 ) 
-        crFill = nvgRGBA(100, 100, 0,100);
-      else 
-        crFill = nvgRGBA(0, 255, 0,100);
-       */
       
       ui_fill_rect(s->vg, rect, crFill, 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
