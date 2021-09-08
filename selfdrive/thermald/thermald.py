@@ -422,7 +422,8 @@ def thermald_thread():
     msg.deviceState.chargingDisabled = power_monitor.should_disable_charging(pandaState, off_ts)
 
     # Check if we need to shut down
-    print( "  pandaState = {}  off_ts={} started_seen={}".format( pandaState, off_ts, started_seen ) )
+    current_power = HARDWARE.get_current_power_draw()
+    print( "  pandaState = {}  off_ts={} started_seen={} current_power={}".format( pandaState, off_ts, started_seen, current_power ) )
     if power_monitor.should_shutdown(pandaState, off_ts, started_seen):
       cloudlog.info(f"shutting device down, offroad since {off_ts}")
       # TODO: add function for blocking cloudlog instead of sleep
