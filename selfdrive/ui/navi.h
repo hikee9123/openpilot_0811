@@ -125,8 +125,8 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       NVGcolor crFill = COLOR_BLACK_ALPHA(100); // nvgRGBA(255, 255, 255,100);
       
       float fpR[] = {255, 255, 0};
-      float fpG[] = {0, 255, 0};
-      float fpB[] = {0, 0, 255};
+      float fpG[] = {0, 255, 100};
+      float fpB[] = {0, 100, 255};
       float xp[] = {100, 300, 500};
       int N = sizeof(xp) / sizeof(xp[0]);
       float x = speedLimitAheadDistance;
