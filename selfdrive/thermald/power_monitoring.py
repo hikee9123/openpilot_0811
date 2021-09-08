@@ -21,6 +21,9 @@ VBATT_INSTANT_PAUSE_CHARGING = 7.0    # Lower limit on the instant car battery v
 MAX_TIME_OFFROAD_S = 30*3600
 MIN_ON_TIME_S = 3600
 
+
+OPKR_SHUTDOWN_TIME = 5                 # sec
+
 class PowerMonitoring:
   def __init__(self):
     self.params = Params()
@@ -186,7 +189,7 @@ class PowerMonitoring:
     usbOnline = HARDWARE.get_usb_present()
     power_on_time = now - offroad_timestamp    
 
-    if usbOnline or (power_on_time < 10):
+    if usbOnline or (power_on_time < OPKR_SHUTDOWN_TIME):
       self.power_on2_time = now
       return False
     elif self.power_on2_time == 0:
@@ -203,7 +206,7 @@ class PowerMonitoring:
       return False
 
     panda_charging = (pandaState.pandaState.usbPowerMode != log.PandaState.UsbPowerMode.client)
-    BATT_PERC_OFF = 90 # 10 if LEON else 3
+    BATT_PERC_OFF = 10  #10 if LEON else 3
 
     should_shutdown = False
     # Wait until we have shut down charging before powering down
