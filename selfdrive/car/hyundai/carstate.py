@@ -60,7 +60,6 @@ class CarState(CarStateBase):
     if not self.acc_mode and self.clu_Vanz < 30 and steeringAngleDeg > 10 and self.time_break and ret.steeringPressed:
        return True
 
-
     return False
 
   def engage_control( self, ret, c ):
@@ -76,10 +75,10 @@ class CarState(CarStateBase):
       self.enagage_status = 2
       self.engage_enable = True
 
-
+    engage_disable_status = self.engage_disable()
     if self.cruise_buttons_old == self.cruise_buttons:
       if self.engage_enable:
-        if self.engage_disable(  ret ):
+        if engage_disable_status:
             self.engage_enable = False
         return self.engage_enable
       elif self.time_delay_int > 0:
