@@ -310,6 +310,8 @@ class CarState(CarStateBase):
     self.Elect_Gear_Step = cp.vl["ELECT_GEAR"]["Elect_Gear_Step"]
     self.SpeedLim_Nav_Clu = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"]
 
+    return ret
+
 
   @staticmethod
   def get_can_parser(CP):
