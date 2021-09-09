@@ -28,7 +28,6 @@ class CarState(CarStateBase):
     self.cruise_buttons = 0
     self.cruise_buttons_time = 0
     self.time_delay_int = 0
-    self.enable_status = 0
     self.VSetDis = 0
     self.clu_Vanz = 0
 
@@ -41,7 +40,78 @@ class CarState(CarStateBase):
     self.cruise_set_mode = 0      # 모드 설정.
     self.gasPressed = False
 
+    # engage button
+    self.cruise_available = False
+    self.acc_mode = False
+    self.engage_enable = False
+    self.enagage_status = 0
+    self.cruise_buttons_old = 0
 
+    self.time_break = 0
+
+  def engage_disable( self, ret ):
+    steeringAngleDeg = abs( ret.steeringAngleDeg )
+
+    if ret.brakePressed:
+      self.time_break = 500
+    elif self.time_break > 0:
+      self.time_break -= 1
+
+    limitAngleDeg = 40
+    if self.time_break:
+      limitAngleDeg = 10
+
+    if not self.acc_mode and self.clu_Vanz < 35 and steeringAngleDeg > limitAngleDeg and ret.steeringPressed:
+       return True
+
+    return False
+
+  def engage_control( self, ret, c ):
+    left_lane = c.hudControl.leftLaneVisible 
+    right_lane = c.hudControl.rightLaneVisible     
+    status_flag = 0
+    if not ret.cruiseState.available or ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
+      status_flag = 1
+      self.enagage_status = 0
+      self.engage_enable = False
+      self.time_delay_int = 100
+    elif self.acc_mode:
+      self.enagage_status = 2
+      self.engage_enable = True
+
+    engage_disable_status = self.engage_disable( ret )
+    if self.cruise_buttons_old == self.cruise_buttons:
+      if self.engage_enable:
+        if engage_disable_status:
+            self.engage_enable = False
+        return self.engage_enable
+      elif self.time_delay_int > 0:
+        self.time_delay_int -= 1
+
+      if self.time_delay_int > 100:
+        pass
+      elif ret.vEgo < 5 or not left_lane or not right_lane or ret.steeringPressed or self.gasPressed or ret.leftBlinker or ret.rightBlinker:  # 15 km/h
+        self.time_delay_int = 100
+      elif self.time_delay_int <= 0:
+        self.engage_enable = True
+
+      return  self.engage_enable
+
+    self.cruise_buttons_old = self.cruise_buttons
+
+    if status_flag == 1:
+      self.engage_enable = False
+    elif self.acc_mode:
+      return  self.engage_enable
+    elif self.cruise_buttons == Buttons.GAP_DIST:
+      self.engage_enable = True
+      self.enagage_status = 1
+    elif self.cruise_buttons == Buttons.CANCEL:
+      self.enagage_status = 0
+      self.time_delay_int = 1000
+      self.engage_enable = False
+
+    return  self.engage_enable
 
   #@staticmethod
   def cruise_speed_button( self ):
@@ -50,19 +120,22 @@ class CarState(CarStateBase):
       self.cruise_set_speed_kph = self.clu_Vanz
 
     set_speed_kph = self.cruise_set_speed_kph
-    if not self.prev_acc_set_btn:
-      self.prev_acc_set_btn = self.acc_active
-      if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
-        self.cruise_set_speed_kph = self.VSetDis
-      else:
-        self.cruise_set_speed_kph = self.clu_Vanz
-
+    if not self.cruise_available:
       if self.prev_clu_CruiseSwState != self.cruise_buttons:
         self.prev_clu_CruiseSwState = self.cruise_buttons
         if self.cruise_buttons == Buttons.GAP_DIST:
           self.cruise_set_mode += 1
           if self.cruise_set_mode > 2:
             self.cruise_set_mode = 0
+      return self.cruise_set_speed_kph
+
+
+    if not self.prev_acc_set_btn:
+      self.prev_acc_set_btn = self.acc_active
+      if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
+        self.cruise_set_speed_kph = self.VSetDis
+      else:
+        self.cruise_set_speed_kph = self.clu_Vanz
       return self.cruise_set_speed_kph
 
     elif self.prev_acc_set_btn != self.acc_active:
@@ -97,23 +170,6 @@ class CarState(CarStateBase):
 
 
 
-  def cruise_enabled_btn( self, main_on, vEgo ):
-    if main_on == False:
-      self.time_delay_int = 0
-    elif not self.enable_status:
-      self.time_delay_int = 2000
-    elif vEgo > 5:   # 15 km/h
-        self.time_delay_int = 0
-    elif self.time_delay_int > 0:
-      self.time_delay_int -= 1
-
-    if self.time_delay_int <= 0:
-      enabled = main_on
-    else:
-      enabled = False
-
-    return  enabled
-
   # TPMS code added from OPKR
   def update_tpms(self, cp, ret ):
     unit_ratio = 1.0
@@ -134,7 +190,7 @@ class CarState(CarStateBase):
     ret.tpms.rr *= unit_ratio
     return ret
 
-  def update(self, cp, cp_cam):
+  def update(self, cp, cp_cam, c):
     ret = car.CarState.new_message()
 
     ret.doorOpen = any([cp.vl["CGW1"]["CF_Gway_DrvDrSw"], cp.vl["CGW1"]["CF_Gway_AstDrSw"],
@@ -170,14 +226,20 @@ class CarState(CarStateBase):
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
     ret.cruiseState.cruiseSwState = self.cruise_buttons
     ret.cruiseState.modeSel = self.cruise_set_mode
-    #if self.CP.openpilotLongitudinalControl:
-    #  ret.cruiseState.available = cp.vl["TCS13"]["ACCEnable"] == 0
-    #  ret.cruiseState.enabled = cp.vl["TCS13"]["ACC_REQ"] == 1
-    #  ret.cruiseState.standstill = False
-    #else:
-    ret.cruiseState.available = cp.vl["SCC11"]["MainMode_ACC"] == 1
-    ret.cruiseState.enabled = ret.cruiseState.available # cp.vl["SCC12"]["ACCMode"] != 0
+
+
+    self.cruise_available = cp.vl["SCC11"]["MainMode_ACC"] == 1
+    self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0
+    if self.cruise_set_mode == 2:
+      ret.cruiseState.available = False
+    else:
+      ret.cruiseState.available = self.cruise_available
     ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
+
+
+
+    
+
 
     set_speed = self.cruise_speed_button()
     if self.acc_active:
@@ -227,7 +289,10 @@ class CarState(CarStateBase):
       ret.rightBlindspot = cp.vl["LCA11"]["CF_Lca_IndRight"] != 0
 
     ret = self.update_tpms( cp, ret )
+    ret.cruiseState.enabled = self.engage_control( ret, c )
+
     # save the entire LKAS11 and CLU11
+    self.lfahda = copy.copy(cp_cam.vl["LFAHDA_MFC"])
     self.lkas11 = copy.copy(cp_cam.vl["LKAS11"])
     self.clu11 = copy.copy(cp.vl["CLU11"])
     self.mdps12 = copy.copy(cp.vl["MDPS12"])
@@ -240,21 +305,13 @@ class CarState(CarStateBase):
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
     self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
-    self.is_highway = cp.vl["SCC11"]["Navi_SCC_Camera_Act"]  # != 0.
+    self.is_highway = self.lfahda["HDA_Icon_State"] != 0.
 
-    self.hda_signal1 = cp.vl["HDA11_MFC"]["NEW_SIGNAL_1"]  # != 0.
-    
-    #self.navi_camera_status  =  cp.vl["SCC11"]["Navi_SCC_Camera_Status"]
-    #self.hda_VsetReq  =  cp.vl["LFAHDA_MFC"]["HDA_VSetReq"]
-    if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
-      self.enable_status = False
-    else:
-      self.enable_status = ret.cruiseState.enabled
+    self.Elect_Gear_Step = cp.vl["ELECT_GEAR"]["Elect_Gear_Step"]
+    self.SpeedLim_Nav_Clu = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"]
 
-    if not self.cruise_enabled_btn( ret.cruiseState.enabled, ret.vEgo ):
-      ret.cruiseState.enabled = False      
-    
     return ret
+
 
   @staticmethod
   def get_can_parser(CP):
@@ -324,8 +381,10 @@ class CarState(CarStateBase):
       ("ACCMode", "SCC12", 1),
 
       ("Navi_SCC_Camera_Act", "SCC11", 0),
-      ("NEW_SIGNAL_1", "HDA11_MFC", 0),
       ("TauGapSet", "SCC11", 4),
+
+
+
 
       # TPMS
       ("UNIT", "TPMS11", 0),
@@ -333,6 +392,8 @@ class CarState(CarStateBase):
       ("PRESSURE_FR", "TPMS11", 0),
       ("PRESSURE_RL", "TPMS11", 0),
       ("PRESSURE_RR", "TPMS11", 0),
+
+      ("SpeedLim_Nav_Clu", "Navi_HU", 0),
     ]
 
     checks = [
@@ -351,10 +412,9 @@ class CarState(CarStateBase):
       ("SCC11", 50),
       ("SCC12", 50),
 
-      ("TPMS11", 0),
-      ("HDA11_MFC", 0),
+      ("TPMS11", 5),
+      ("Navi_HU", 5),
     ]
-
 
 
     if CP.enableBsm:
@@ -402,6 +462,7 @@ class CarState(CarStateBase):
       ]
     elif CP.carFingerprint in FEATURES["use_elect_gears"]:
       signals += [("Elect_Gear_Shifter", "ELECT_GEAR", 0)]
+      signals += [("Elect_Gear_Step", "ELECT_GEAR", 0)]
       checks += [("ELECT_GEAR", 20)]
     else:
       signals += [
@@ -447,10 +508,17 @@ class CarState(CarStateBase):
       ("CF_Lkas_FusionState", "LKAS11", 0),
       ("CF_Lkas_FcwOpt_USM", "LKAS11", 0),
       ("CF_Lkas_LdwsOpt_USM", "LKAS11", 0),
+
+      ("HDA_USM", "LFAHDA_MFC", 0),
+      ("HDA_Active", "LFAHDA_MFC", 0),
+      ("HDA_Icon_State", "LFAHDA_MFC", 0),
+      ("HDA_LdwSysState", "LFAHDA_MFC", 0),
+      ("HDA_Icon_Wheel", "LFAHDA_MFC", 0),
     ]
 
     checks = [
-      ("LKAS11", 100)
+      ("LKAS11", 100),
+      ("LFAHDA_MFC", 20),      
     ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)

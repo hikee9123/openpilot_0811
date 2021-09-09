@@ -288,7 +288,7 @@ uint8_t binary_object_store_desc[] = {
   // https://github.com/WICG/webusb/issues/49
   // other implementations use various other indexed to leverate this no-longer-valid feature. we wont.
   // the spec says we *must* reply to index 0x03 with the url, so we'll hint that that's the right index
-  0x03, // iLandingPage, URL descriptor index of the device?™s landing page.
+  0x03, // iLandingPage, URL descriptor index of the deviceâ€™s landing page.
 
   // -------------------------------------------------
   // WinUSB descriptor

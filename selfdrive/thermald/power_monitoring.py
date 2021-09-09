@@ -21,6 +21,9 @@ VBATT_INSTANT_PAUSE_CHARGING = 7.0    # Lower limit on the instant car battery v
 MAX_TIME_OFFROAD_S = 30*3600
 MIN_ON_TIME_S = 3600
 
+
+OPKR_SHUTDOWN_TIME = 3                 # sec
+
 class PowerMonitoring:
   def __init__(self):
     self.params = Params()
@@ -173,7 +176,7 @@ class PowerMonitoring:
     disable_charging |= (self.car_battery_capacity_uWh <= 0)
     disable_charging &= (not pandaState.pandaState.ignitionLine and not pandaState.pandaState.ignitionCan)
     disable_charging &= (not self.params.get_bool("DisablePowerDown"))
-    disable_charging &= (pandaState.pandaState.harnessStatus != log.PandaState.HarnessStatus.notConnected)
+    #disable_charging &= (pandaState.pandaState.harnessStatus != log.PandaState.HarnessStatus.notConnected)
     disable_charging |= self.params.get_bool("ForcePowerDown")
     return disable_charging
 
@@ -185,29 +188,32 @@ class PowerMonitoring:
     now = sec_since_boot()    
     usbOnline = HARDWARE.get_usb_present()
     power_on_time = now - offroad_timestamp    
-
-    if usbOnline or (power_on_time < 10):
+    if usbOnline or (power_on_time < OPKR_SHUTDOWN_TIME):
       self.power_on2_time = now
       return False
     elif self.power_on2_time == 0:
       self.power_on2_time = now
 
     batteryPercent = HARDWARE.get_battery_capacity()
-    battery_power_on_time = now - self.power_on2_time 
+    battery_power_on_time = now - self.power_on2_time
     if batteryPercent < 10:
-      if battery_power_on_time> 10:
+      if battery_power_on_time > 10:
         return True
 
  
     if pandaState is None:
       return False
 
-    panda_charging = (pandaState.pandaState.usbPowerMode != log.PandaState.UsbPowerMode.client)
-    BATT_PERC_OFF = 90 # 10 if LEON else 3
+    panda_charging = (pandaState.pandaState.usbPowerMode == log.PandaState.UsbPowerMode.cdp)
+    BATT_PERC_OFF = 30  #10 if LEON else 3
+
+    disable_charging = self.should_disable_charging(pandaState, offroad_timestamp)
+    battery_changing = HARDWARE.get_battery_charging()
 
     should_shutdown = False
     # Wait until we have shut down charging before powering down
-    should_shutdown |= (not panda_charging and self.should_disable_charging(pandaState, offroad_timestamp))
+    should_shutdown |= (not panda_charging and not battery_changing)
+    print( "  panda_charging={}  disable_charging={}  battery_changing={}".format(panda_charging, disable_charging, battery_changing) )
     should_shutdown |= (batteryPercent < BATT_PERC_OFF)
     should_shutdown &= started_seen or (now > MIN_ON_TIME_S)
     return should_shutdown

@@ -182,57 +182,33 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
                                    "run_mixplorer.sh 을 실행 합니다.");
   connect(mixplorer_exe, &ButtonControl::clicked, [=]() 
   { 
-        //  if (ConfirmationDialog::confirm("Are you sure you want to exec(com.mixplorer)?", this)) 
-        //  {
-              //std::system("/data/openpilot/run_mixplorer.sh");
-              std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
-         // }
+        std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
   });
 
-  auto tmapopen_exe = new ButtonControl("NAVI Open", "Open",
-                                   "NAVI 을 실행 합니다.");
+  auto tmapopen_exe = new ButtonControl("주행로그 전부 삭제", "실행");
   connect(tmapopen_exe, &ButtonControl::clicked, [=]() 
   { 
-         // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Open)?", this)) 
-         // {
-            Params().put("OpkrMapEnable", "1");
-          //}
+      const char* realdata_del = "rm -rf /storage/emulated/0/realdata/*";
+      if (ConfirmationDialog::confirm("저장된 주행로그를 모두 삭제합니다. 진행하시겠습니까?", this)){
+        std::system(realdata_del);
+      }
   });
 
-  auto tmapopen2_exe = new ButtonControl("NAVI Overlay", "Open",
-                                   "NAVI2 실행후 Overlay mode로 변경합니다.");
-  connect(tmapopen2_exe, &ButtonControl::clicked, [=]() 
-  { 
-       // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI2 Open)?", this)) 
-       // {
-          Params().put("OpkrMapEnable", "2");
-       // }
-  });  
 
-  auto tmapclose_exe = new ButtonControl("NAVI Return", "Close",
-                                   "NAVI을 Return 합니다.");
+  auto tmapclose_exe = new ButtonControl("NAVI Return", "Open","NAVI을 Return 합니다.");
   connect(tmapclose_exe, &ButtonControl::clicked, [=]() 
   { 
-          //if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Close)?", this)) 
-          //{
-            Params().put("OpkrMapEnable", "3");
-
-            //Params().put("OpkrMapEnable", "0");  // NAVI program exit.
-          //}
+    std::system("am start --activity-task-on-home com.mnsoft.mappyobn/com.mnsoft.mappy.MainActivity");
   });
 
-  auto softkey_exe = new ButtonControl("Soft Key Open", "Open",
-                                   "Soft Key 을 실행 합니다.");
+
+  auto softkey_exe = new ButtonControl("Soft Key Open", "Open","Soft Key 을 실행 합니다.");
   connect(softkey_exe, &ButtonControl::clicked, [=]() 
   { 
-         // if (ConfirmationDialog::confirm("Are you sure you want to exec(Soft Key)?", this)) 
-          //{
-            //std::system("pm enable com.gmd.hidesoftkeys")
-            std::system("am start com.gmd.hidesoftkeys/com.gmd.hidesoftkeys.MainActivity");
-          //}
+    std::system("am start com.gmd.hidesoftkeys/com.gmd.hidesoftkeys.MainActivity");
   });  
 
-  for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapopen2_exe, tmapclose_exe, softkey_exe}) {
+  for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapclose_exe, softkey_exe}) {
     if (btn) {
       layout()->addWidget(horizontal_line());
       connect(parent, SIGNAL(offroadTransition(bool)), btn, SLOT(setEnabled(bool)));

@@ -196,7 +196,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PandaDongleId", CLEAR_ON_MANAGER_START | CLEAR_ON_PANDA_DISCONNECT},
     {"PandaHeartbeatLost", CLEAR_ON_MANAGER_START | CLEAR_ON_IGNITION_OFF},
     {"Passive", PERSISTENT},
-    {"PrimeRedirected", PERSISTENT},
+    // {"PrimeRedirected", PERSISTENT},
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
     {"ReleaseNotes", PERSISTENT},
@@ -239,6 +239,7 @@ std::unordered_map<std::string, uint32_t> keys = {
 
     {"OpkrRunNaviOnBoot", PERSISTENT},
     {"OpkrMapEnable", PERSISTENT},
+    {"OpkrParameters", PERSISTENT},
 };
 
 } // namespace

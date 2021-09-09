@@ -149,11 +149,10 @@ class CarController():
     self.apply_steer_last = apply_steer
     sys_warning, sys_state = self.process_hud_alert( lkas_active, c )
 
-    str_log1 = 'LKAS={:2.0f} torg={:5.0f} {:5.0f}'.format( CS.lkas_button_on,  apply_steer, CS.out.steeringTorque  )
+    str_log1 = 'LKAS={:2.0f} EG={:.0f} SL={:.1f}'.format(  CS.lkas_button_on, CS.Elect_Gear_Step, CS.SpeedLim_Nav_Clu   )
     trace1.printf2( '{}'.format( str_log1 ) )
 
-    str_log1 = 'MODE={:.0f} GAP={:.0f} H1={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet,  CS.hda_signal1  )
-
+    str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway )
     trace1.printf3( '{}'.format( str_log1 ) )
 
 
@@ -197,10 +196,14 @@ class CarController():
       else:
         self.resume_cnt = 0
 
+
     # 20 Hz LFA MFA message
     if frame % 5 == 0:
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled))
+      elif self.car_fingerprint in FEATURES["send_hda_mfa"]:
+        can_sends.append(create_hda_mfc(self.packer, CS, c ))
+        
 
 
     self.lkas11_cnt += 1

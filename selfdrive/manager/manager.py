@@ -125,14 +125,18 @@ def manager_thread():
   cloudlog.info({"environ": os.environ})
 
 
-
+  ignore = []
   params = Params()
   enableLogger = params.get_bool("UploadRaw")
   if enableLogger:
     # save boot log
     subprocess.call("./bootlog", cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
+  else:
+    ignore += ["loggerd","logmessaged","deleter","tombstoned","uploader","updated"]
+    # ignore += ["loggerd","logmessaged","deleter","tombstoned","uploader","updated","androidd"] #,"rtshield"]
+    # ignore += ["manage_athenad","proclogd","clocksd","timezoned"]
 
-  ignore = []
+
   if params.get("DongleId", encoding='utf8') == UNREGISTERED_DONGLE_ID:
     ignore += ["manage_athenad", "uploader"]
   if os.getenv("NOBOARD") is not None:

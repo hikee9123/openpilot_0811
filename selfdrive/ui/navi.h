@@ -11,6 +11,42 @@ this is navigation code by OPKR, and thank you to the OPKR developer.
 I love OPKR code.
 */
 
+
+static float interp( float xv, float xp[], float fp[], int N)
+{
+	float dResult = 0; 
+	int low, hi = 0;
+
+	while ( (hi < N) && (xv > xp[hi]))
+	{
+		hi += 1;
+	}
+	low = hi - 1;
+	if( low < 0 )
+	{
+		low = N-1;
+		return fp[0];
+	}
+
+	if (hi == N && xv > xp[low])
+	{
+		return fp[N-1];
+	}
+	else
+	{
+		if( hi == 0 )
+		{
+			return fp[0];
+		}
+		else
+		{
+			dResult = (xv - xp[low]) * (fp[hi] - fp[low]) / (xp[hi] - xp[low]) + fp[low];
+			return dResult;
+		}
+	}
+	return  dResult;
+}
+
 static void ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
 
   if( font_name )
@@ -85,7 +121,22 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       int txt_xpos = img_xpos + 20;  
       int txt_ypos = img_ypos + img_size - 20;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
-      ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
+      
+      NVGcolor crFill = COLOR_BLACK_ALPHA(100); // nvgRGBA(255, 255, 255,100);
+      
+      float fpR[] = {255, 255, 0};
+      float fpG[] = {0, 255, 100};
+      float fpB[] = {0, 100, 255};
+      float xp[] = {100, 300, 500};
+      int N = sizeof(xp) / sizeof(xp[0]);
+      float x = speedLimitAheadDistance;
+      int nR = (int)interp( x, xp,  fpR, N);
+      int nG = (int)interp( x, xp,  fpG, N);
+      int nB = (int)interp( x, xp,  fpB, N);
+      
+      crFill = nvgRGBA(nR, nG, nB, 200);
+      
+      ui_fill_rect(s->vg, rect, crFill, 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
 
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
@@ -95,7 +146,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     // 2. image
     if( traffic_sign  )
     {
-      float img_alpha = 0.3f;
+      float img_alpha = 0.9f;
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
     }
 
@@ -135,7 +186,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         szSign = szSignal;
       }
       sprintf(szSignal,"%d", nTrafficSign );
-      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.5) + int(nFontSize*0.5), szSign, nFontSize, COLOR_WHITE, "sans-bold"); 
+      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.5) + int(nFontSize*0.5), szSign, nFontSize, COLOR_BLACK, "sans-bold"); 
     }
 
 }
@@ -152,21 +203,21 @@ static void ui_draw_navi(UIState *s)
   int   mapValid = scene.liveNaviData.getMapValid();
 
 
-   float dSec = scene.liveNaviData.getArrivalSec();
-   float dDistance = scene.liveNaviData.getArrivalDistance();
+   //float dSec = scene.liveNaviData.getArrivalSec();
+  // float dDistance = scene.liveNaviData.getArrivalDistance();
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
   if( mapValid )
   {
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 
-    nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
-    nvgFontSize(s->vg, 48);
-    int xpos = 250;
-    int ypos = 300;
-    nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-    ui_print(s, xpos, ypos, "AT:%.1f", dSec  );
-    ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
+    //nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+    //nvgFontSize(s->vg, 48);
+    //int xpos = 250;
+    //int ypos = 300;
+    //nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+    //ui_print(s, xpos, ypos, "AT:%.1f", dSec  );
+    //ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
   }
     
   

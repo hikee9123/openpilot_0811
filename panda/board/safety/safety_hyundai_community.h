@@ -7,17 +7,15 @@ int OP_EMS_live = 0;
 int HKG_mdps_bus = -1;
 int HKG_scc_bus = -1;
 const CanMsg HYUNDAI_COMMUNITY_TX_MSGS[] = {
-  {832, 0, 8}, {832, 1, 8}, // LKAS11 Bus 0, 1
-  {1265, 0, 4}, {1265, 1, 4}, {1265, 2, 4}, // CLU11 Bus 0, 1, 2
+  {832, 0, 8},  // LKAS11 ->2
+  {1265, 0, 4}, // CLU11 Bus   ->0
   {1157, 0, 4}, // LFAHDA_MFC Bus 0
-  {593, 2, 8},  // MDPS12, Bus 2
+  {593, 2, 8},  // MDPS12, Bus 2      ->0
   {1056, 0, 8}, //   SCC11,  Bus 0
   {1057, 0, 8}, //   SCC12,  Bus 0
   {1290, 0, 8}, //   SCC13,  Bus 0
-  {905, 0, 8},  //   SCC14,  Bus 0
-  {1186, 0, 8},  //   4a2SCC, Bus 0
-  {790, 1, 8}, // EMS11, Bus 1
  };
+
 
 // older hyundai models have less checks due to missing counters and checksums
 AddrCheckStruct hyundai_community_rx_checks[] = {
@@ -144,7 +142,7 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   if (addr == 832) {
     OP_LKAS_live = 20;
     int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ff) - 1024;
-    uint32_t ts = TIM2->CNT;
+    uint32_t ts = microsecond_timer_get();
     bool violation = 0;
 
     if (controls_allowed) {
