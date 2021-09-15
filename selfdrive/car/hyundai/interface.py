@@ -30,6 +30,27 @@ class CarInterface(CarInterfaceBase):
 
     ret.startAccel = 1.0
 
+    # lateralTuning.indi.actuatorEffectiveness
+    # As effectiveness increases, actuation strength decreases 
+    # Too high: weak, sloppy lane centering, slow oscillation, can't follow high curvature, high steering error causes snappy corrections 
+    # Too low: overpower, saturation, jerky, fast oscillation 
+    # Just right: Highest still able to maintain good lane centering. 
+    # lateralTuning.indi.timeConstant 
+    # Extend exponential decay of prior output steer 
+    # Too high: sloppy lane centering 
+    # Too low: noisy actuation, responds to every bump, maybe unable to maintain lane center due to rapid actuation 
+    # Just right: above noisy actuation and lane centering instability 
+    # lateralTuning.indi.innerLoopGain 
+    # Steer rate error gain 
+    # Too high: jerky oscillation in high curvature 
+    # Too low: sloppy, cannot accomplish desired steer angle 
+    # Just right: brief snap on entering high curvature 
+    # lateralTuning.indi.outerLoopGain 
+    # Steer error gain 
+    # Too high: twitchy hyper lane centering, oversteering 
+    # Too low: sloppy, all over lane 
+    # Just right: crisp lane centering
+
     if candidate == CAR.GRANDEUR_HEV_19:
       ret.mass = 1675. + STD_CARGO_KG
       ret.wheelbase = 2.845
