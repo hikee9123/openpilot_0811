@@ -447,7 +447,7 @@ static std::string get_tpms_text(float tpms) {
 
 static void bb_draw_tpms(UIState *s, int viz_tpms_x, int viz_tpms_y )
 {
-    const UIScene *scene = &s->scene;
+    //const UIScene *scene = &s->scene;
     auto car_state = (*s->sm)["carState"].getCarState();
     auto tpms = car_state.getTpms();
 
@@ -490,7 +490,9 @@ static void bb_draw_tpms(UIState *s, int viz_tpms_x, int viz_tpms_y )
 //draw compass by opkr and re-designed by hoya
 static void bb_draw_compass(UIState *s, int compass_x, int compass_y )
 {
-  auto   gps_ext = scene->gpsLocationExternal;
+  UIScene &scene = s->scene;
+  
+  auto   gps_ext = scene.gpsLocationExternal;
   //float  gpsAccuracyUblox = gps_ext.getAccuracy();
   //float  altitudeUblox = gps_ext.getAltitude();
   float  bearingUblox = gps_ext.getBearingDeg();
