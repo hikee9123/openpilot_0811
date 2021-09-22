@@ -19,6 +19,7 @@
 #include "selfdrive/common/util.h"
 #include "selfdrive/hardware/hw.h"
 #include "selfdrive/ui/ui.h"
+
 #include "selfdrive/ui/navi.h"
 #include "selfdrive/ui/dashcam.h"
 #include "selfdrive/ui/kegman_ui.h"
@@ -300,8 +301,10 @@ void ui_nvg_init(UIState *s) {
   std::vector<std::pair<const char *, const char *>> images = {
     {"wheel", "../assets/img_chffr_wheel.png"},
     {"driver_face", "../assets/img_driver_face.png"},
-    {"compass", "../assets/compass/img_compass.png"},
-    {"direction", "../assets/compass/img_direction.png"},
+
+    {"compass", "../assets/addon/image/img_compass.png"},
+    {"direction", "../assets/addon/image/img_direction.png"},
+    {"tire_pressure", "../assets/addon/image/img_tire_pressure.png"},
 
     {"speed_30", "../assets/navigation/img_30_speedahead.png"},
     {"speed_40", "../assets/navigation/img_40_speedahead.png"},

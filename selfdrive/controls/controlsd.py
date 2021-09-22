@@ -4,7 +4,7 @@ import math
 from numbers import Number
 
 from cereal import car, log
-from common.numpy_fast import clip
+from common.numpy_fast import clip, interp
 from common.realtime import sec_since_boot, config_realtime_process, Priority, Ratekeeper, DT_CTRL
 from common.profiler import Profiler
 from common.params import Params, put_nonblocking
@@ -179,6 +179,18 @@ class Controls:
 
     # atom
     self.openpilot_mode = 10
+
+  def update_modelToSteerRatio(self, learnerSteerRatio ):
+    steerRatio = learnerSteerRatio
+    if self.sm.updated['lateralPlan']:
+      modelSpeed = self.sm['lateralPlan'].modelSpeed * CV.MS_TO_KPH
+      if modelSpeed:
+        dRate = interp( modelSpeed, [200,450], [ 1, 0.9 ] )
+        steerRatio = learnerSteerRatio * dRate
+
+    steerRatio = clip( steerRatio, 13.5, 19.5 )
+
+    return steerRatio
 
 
   def update_events(self, CS):
@@ -450,8 +462,10 @@ class Controls:
 
     # Update VehicleModel
     params = self.sm['liveParameters']
+    steerRatio = self.update_modelToSteerRatio( params.steerRatio )
     x = max(params.stiffnessFactor, 0.1)
-    sr = max(params.steerRatio, 0.1)
+    sr = max(steerRatio, 5.0)
+    #sr = max(params.steerRatio, 0.1)
     self.VM.update_params(x, sr)
 
     lat_plan = self.sm['lateralPlan']

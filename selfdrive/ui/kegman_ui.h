@@ -42,6 +42,7 @@ static void ui_draw_track(UIState *s, const line_vertices_data &vd)
 }
 */
 
+
 static void bb_ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
 
   if( font_name )
@@ -247,20 +248,8 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
         value_fontSize, label_fontSize, uom_fontSize );
     bb_ry = bb_y + bb_h;
   }
-
-
-  //add compass
-  if (true) {
-    //draw compass by opkr
-    const int radian = 74;
-    const int compass_x = bb_rx - radian;// s->viz_rect.x + s->viz_rect.w - 167 - (bdr_s);
-    const int compass_y = bb_ry + 22;// (s->viz_rect.y + (bdr_s)) + 710;
-    const int direction_x = compass_x + radian;
-    const int direction_y = compass_y + radian;
-    ui_draw_image(s, {compass_x, compass_y, 150, 150}, "compass", 0.6f);
-    ui_draw_circle_image(s, direction_x, direction_y - (bdr_s+7), 90, "direction", nvgRGBA(0x0, 0x0, 0x0, 0x0), 0.6f, -bearingUblox);
-  }
 */
+
 
   //finally draw the frame
   bb_h += 20;
@@ -438,74 +427,80 @@ static void bb_ui_draw_measures_left(UIState *s, int bb_x, int bb_y, int bb_w )
 }
 
 
-// TPMS code added from OPKR
-static void print_tpms(UIState *s, int x, int y, float tmps) {
-  NVGcolor color = COLOR_WHITE_ALPHA(200);
-  char szTPMS[64];
-
-  if ( tmps < 31)   {
-    color = COLOR_RED;
-  } else if ( tmps < 34)   {
-    color = COLOR_YELLOW;
-  } else if (tmps > 50)   {
-    color =  COLOR_WHITE_ALPHA(200);
-  } 
-
-  if ( tmps >= 250 || tmps <= 0 )  {
-    color = COLOR_WHITE_ALPHA(200);
-    snprintf(szTPMS, sizeof(szTPMS), "-" );
-  }  else  {
-    snprintf(szTPMS, sizeof(szTPMS), "%.0f", tmps );
-  }
-  
-  bb_ui_text( s, x, y, szTPMS, 55, color, "sans-semibold");
+// tpms by neokii
+static NVGcolor get_tpms_color(float tpms) {
+    if(tpms < 5 || tpms > 60) // N/A
+        return nvgRGBA(255, 255, 255, 200);
+    if(tpms < 30)
+        return nvgRGBA(255, 90, 90, 200);
+    return nvgRGBA(255, 255, 255, 200);
 }
 
-static void bb_draw_tpms(UIState *s, int viz_tpms_x, int viz_tpms_y) {
-  UIScene &scene = s->scene;
+static std::string get_tpms_text(float tpms) {
+    if(tpms < 5 || tpms > 200)
+        return "";
 
-  int viz_tpms_w = 230;
-  int viz_tpms_h = 160;
-  
+    char str[32];
+    snprintf(str, sizeof(str), "%.0f", round(tpms));
+    return std::string(str);
+}
 
-  auto tpms = scene.car_state.getTpms();
-  float fl = tpms.getFl();
-  float fr = tpms.getFr();
-  float rl = tpms.getRl();
-  float rr = tpms.getRr();
+static void bb_draw_tpms(UIState *s, int viz_tpms_x, int viz_tpms_y )
+{
+    const UIScene *scene = &s->scene;
+    auto car_state = (*s->sm)["carState"].getCarState();
+    auto tpms = car_state.getTpms();
 
-  float maxv = 0;
-  float minv = 300;
-  minv = std::min( fl, fr );
-  minv = std::min( minv, rl );
-  minv = std::min( minv, rr );
+    const float fl = tpms.getFl();
+    const float fr = tpms.getFr();
+    const float rl = tpms.getRl();
+    const float rr = tpms.getRr();
 
-  maxv = std::max( fl, fr );
-  maxv = std::max( maxv, rl );
-  maxv = std::max( maxv, rr );
+    const int w = 58;
+    const int h = 126;
+    int x = viz_tpms_x;// bdr_s + 80;
+    int y = viz_tpms_y - h;// s->fb_h - bdr_s - h - 60;
 
-  // Draw Border
-  const Rect rect = {viz_tpms_x, viz_tpms_y, viz_tpms_w, viz_tpms_h};
-  ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 10, 20.);
-  // Draw Background
-  NVGcolor colorBK =  COLOR_BLACK_ALPHA(80);
-  if ((maxv - minv) > 3) 
-  {
-    colorBK = COLOR_RED_ALPHA(80);
-  }
-  ui_fill_rect(s->vg, rect, colorBK, 20);
+    const int margin = 10;
+
+    nvgBeginPath(s->vg);
+    ui_draw_image(s, {x, y, w, h}, "tire_pressure", 0.8f);
+
+    nvgFontSize(s->vg, 60);
+    nvgFontFace(s->vg, "sans-semibold");
+
+    nvgTextAlign(s->vg, NVG_ALIGN_RIGHT);
+    nvgFillColor(s->vg, get_tpms_color(fl));
+    nvgText(s->vg, x-margin, y+45, get_tpms_text(fl).c_str(), NULL);
+
+    nvgTextAlign(s->vg, NVG_ALIGN_LEFT);
+    nvgFillColor(s->vg, get_tpms_color(fr));
+    nvgText(s->vg, x+w+margin, y+45, get_tpms_text(fr).c_str(), NULL);
+
+    nvgTextAlign(s->vg, NVG_ALIGN_RIGHT);
+    nvgFillColor(s->vg, get_tpms_color(rl));
+    nvgText(s->vg, x-margin, y+h-15, get_tpms_text(rl).c_str(), NULL);
+
+    nvgTextAlign(s->vg, NVG_ALIGN_LEFT);
+    nvgFillColor(s->vg, get_tpms_color(rr));
+    nvgText(s->vg, x+w+margin, y+h-15, get_tpms_text(rr).c_str(), NULL);
+}
 
 
-  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  int pos_x = viz_tpms_x + (viz_tpms_w / 2);
-  int pos_y = viz_tpms_y - 10;
-  bb_ui_text(s, pos_x, pos_y, "TPMS(psi)", 15, COLOR_WHITE_ALPHA(180), "sans-regular");
+//draw compass by opkr and re-designed by hoya
+static void bb_draw_compass(UIState *s, int compass_x, int compass_y )
+{
+  auto   gps_ext = scene->gpsLocationExternal;
+  //float  gpsAccuracyUblox = gps_ext.getAccuracy();
+  //float  altitudeUblox = gps_ext.getAltitude();
+  float  bearingUblox = gps_ext.getBearingDeg();
 
-  pos_y = viz_tpms_y + 30;
-  print_tpms( s, pos_x-55, pos_y+50, fl );
-  print_tpms( s, pos_x+55, pos_y+50, fr );
-  print_tpms( s, pos_x-55, pos_y+100, rl );
-  print_tpms( s, pos_x+55, pos_y+100, rr );
+  //if ( gpsAccuracyUblox != 0.00 )
+
+  const int radius = 85 + 40;
+  ui_draw_circle_image_rotation(s, compass_x, compass_y, radius, "direction", nvgRGBA(0, 0, 0, 0), 0.7f, -bearingUblox);
+  ui_draw_circle_image_rotation(s, compass_x, compass_y, radius, "compass", nvgRGBA(0, 0, 0, 0), 0.8f);
+
 }
 
 
@@ -525,11 +520,19 @@ static void bb_ui_draw_UI(UIState *s)
   bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y, bb_dmr_w);
 
   // 2. tpms
-  int viz_tpms_x = s->fb_w - (bdr_s+425);
-  int viz_tpms_y = bdr_s + 35;
-  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y );
+ // int viz_tpms_x = s->fb_w - (bdr_s+425);
+  //int viz_tpms_y = bdr_s + 35;
+  int viz_tpms_x = bdr_s + 80;
+  int viz_tpms_y = s->fb_h - bdr_s - 60;  
+  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y);
+//  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y );
 
-  // 3. debug
+  // 3. compass
+  const int compass_x = 1920 / 2 - 20;
+  const int compass_y = 1080 - 40;
+  bb_draw_compass( s, compass_x, compass_y );
+
+  // 4. debug
   int xpos = 250;
   int ypos = 400;
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
@@ -544,25 +547,5 @@ static void bb_ui_draw_UI(UIState *s)
 
  // }
 
-/*  
-  auto lead_one = (*s->sm)["modelV2"].getModelV2().getLeadsV3()[0];
-  if ( lead_one.getProb() > 0.0 ) {
-    ui_print(s, xpos, ypos+50, "P:%.2f", lead_one.getProb()  );
-    ui_print(s, xpos, ypos+100, "X:%.1f", lead_one.getX()[0]  );
-    ui_print(s, xpos, ypos+150, "Y:%.1f", lead_one.getY()[0]  );
-    ui_print(s, xpos, ypos+200, "V:%.1f", lead_one.getV()[0]  );
-    ui_print(s, xpos, ypos+250, "A:%.1f", lead_one.getA()[0]  );
-  }
-
-  if ( lead_one.getProb() > 0.0 ) {
-    auto model = (*s->sm)["modelV2"].getModelV2();
-    auto model_position = model.getPosition();
-
-    ui_print(s, xpos, ypos+100, "X:%.3f", model_position.getX()[0]  );
-    ui_print(s, xpos, ypos+150, "Y:%.3f", model_position.getY()[0]  );
-    ui_print(s, xpos, ypos+200, "Z:%.3f", model_position.getZ()[0]  );
-    ui_print(s, xpos, ypos+250, "T:%.3f", model_position.getT()[0]  );
-  }
-*/
 }
 //BB END: functions added for the display of various items
