@@ -517,10 +517,12 @@ static void bb_draw_compass(UIState *s, int compass_x, int compass_y )
   //float  gpsAccuracyUblox = gps_ext.getAccuracy();
   //float  altitudeUblox = gps_ext.getAltitude();
   float  bearingUblox = gps_ext.getBearingDeg();
+  float  fAlpha = 1.0f
 
-  //if ( gpsAccuracyUblox != 0.00 )
+  //if ( gpsAccuracyUblox == 0.00 )
+  //    fAlpha = 0.2f
 
-  const int radius = 85 + 40;
+  const int radius = 130;// 85 + 40;
   ui_draw_circle_image_rotation(s, compass_x, compass_y, radius, "direction", nvgRGBA(0, 0, 0, 0), 0.7f, -bearingUblox);
   ui_draw_circle_image_rotation(s, compass_x, compass_y, radius, "compass", nvgRGBA(0, 0, 0, 0), 0.8f);
 
@@ -545,7 +547,7 @@ static void bb_ui_draw_UI(UIState *s)
   // 2. tpms
   if( true )
   {
-    int viz_tpms_x = s->fb_w - bdr_s - bb_dmr_w / 2;
+    int viz_tpms_x = s->fb_w - bb_dmr_w / 2 - 60;
     int viz_tpms_y = s->fb_h - bdr_s - 220;  
     bb_draw_tpms( s, viz_tpms_x, viz_tpms_y);
   }
@@ -554,7 +556,7 @@ static void bb_ui_draw_UI(UIState *s)
   if( true )
   {
     const int compass_x = s->fb_w / 2 - 20;
-    const int compass_y = s->fb_h - 50;
+    const int compass_y = s->fb_h - 45;
     bb_draw_compass( s, compass_x, compass_y );
   }
     
