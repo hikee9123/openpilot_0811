@@ -547,6 +547,7 @@ static void bb_ui_draw_UI(UIState *s)
   //int viz_tpms_y = bdr_s + 35;
   int viz_tpms_x = bdr_s + 80;
   int viz_tpms_y = s->fb_h - bdr_s - 60;  
+  if( 0 )
   bb_draw_tpms( s, viz_tpms_x, viz_tpms_y);
 //  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y );
 
