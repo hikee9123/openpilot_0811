@@ -556,7 +556,7 @@ static void bb_ui_draw_UI(UIState *s)
   if( true )
   {
     const int compass_x = s->fb_w / 2 - 20;
-    const int compass_y = s->fb_h - 45;
+    const int compass_y = s->fb_h - 40;
     bb_draw_compass( s, compass_x, compass_y );
   }
     
