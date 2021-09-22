@@ -302,9 +302,9 @@ void ui_nvg_init(UIState *s) {
     {"wheel", "../assets/img_chffr_wheel.png"},
     {"driver_face", "../assets/img_driver_face.png"},
 
-    {"compass", "../assets/addon/image/img_compass.png"},
-    {"direction", "../assets/addon/image/img_direction.png"},
-    {"tire_pressure", "../assets/addon/image/img_tire_pressure.png"},
+    {"compass", "../assets/addon/Image/img_compass.png"},
+    {"direction", "../assets/addon/Image/img_direction.png"},
+    {"tire_pressure", "../assets/addon/Image/img_tire_pressure.png"},
 
     {"speed_30", "../assets/navigation/img_30_speedahead.png"},
     {"speed_40", "../assets/navigation/img_40_speedahead.png"},
@@ -325,6 +325,10 @@ void ui_nvg_init(UIState *s) {
   };
   for (auto [name, file] : images) {
     s->images[name] = nvgCreateImage(s->vg, file, 1);
+    if( s->images[name] == NULL )
+    {
+      printf("images name = %s\n", file);
+    }
     assert(s->images[name] != 0);
   }
 }
