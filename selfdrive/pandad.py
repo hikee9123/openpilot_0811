@@ -58,10 +58,18 @@ def update_panda() -> Panda:
     fw_signature.hex(),
   ))
 
+  #return panda
+
   if panda.bootstub or panda_signature != fw_signature:
     cloudlog.info("Panda firmware out of date, update required")
     panda.flash()
     cloudlog.info("Done flashing")
+    cloudlog.warning("bootstub %s  version: %s, signature %s, expected %s" % (
+      panda.bootstub,
+      panda_version,
+      panda_signature.hex(),
+      fw_signature.hex(),
+    ))    
 
   if panda.bootstub:
     bootstub_version = panda.get_version()
@@ -90,8 +98,9 @@ def main() -> None:
     Params().put_bool("PandaHeartbeatLost", True)
     cloudlog.event("heartbeat lost", deviceState=health)
 
-  cloudlog.info("Resetting panda")
-  panda.reset()
+  # atom
+  #cloudlog.info("Resetting panda")
+  #panda.reset()
 
   os.chdir(os.path.join(BASEDIR, "selfdrive/boardd"))
   os.execvp("./boardd", ["./boardd"])

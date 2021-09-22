@@ -69,6 +69,7 @@ def read_thermal(thermal_config):
   dat.deviceState.gpuTempC = [read_tz(z) / thermal_config.gpu[1] for z in thermal_config.gpu[0]]
   dat.deviceState.memoryTempC = read_tz(thermal_config.mem[0]) / thermal_config.mem[1]
   dat.deviceState.ambientTempC = read_tz(thermal_config.ambient[0]) / thermal_config.ambient[1]
+  dat.deviceState.batteryTempCDEPRECATED = read_tz(thermal_config.bat[0]) / thermal_config.bat[1]
   dat.deviceState.modemTempC = HARDWARE.get_modem_temperatures()
   return dat
 
@@ -179,6 +180,7 @@ def thermald_thread():
   modem_version = None
   registered_count = 0
   nvme_temps = None
+  wifiIpAddress = 'N/A'
 
   current_filter = FirstOrderFilter(0., CURRENT_TAU, DT_TRML)
   temp_filter = FirstOrderFilter(0., TEMP_TAU, DT_TRML)
@@ -216,6 +218,7 @@ def thermald_thread():
     cloudlog.event("CPR", data=cpr_data)
 
   while 1:
+    ts = sec_since_boot()
     pandaState = messaging.recv_sock(pandaState_sock, wait=True)
     msg = read_thermal(thermal_config)
 
@@ -258,6 +261,13 @@ def thermald_thread():
           pandaState_prev.pandaState.pandaType != log.PandaState.PandaType.unknown:
           params.clear_all(ParamKeyType.CLEAR_ON_PANDA_DISCONNECT)
       pandaState_prev = pandaState
+    else:
+      # atom
+      is_openpilot_view_enabled = params.get_bool("IsOpenpilotViewEnabled") # IsRHD
+      if is_openpilot_view_enabled:
+        startup_conditions["ignition"] = True
+      elif startup_conditions["ignition"] == True:
+        startup_conditions["ignition"] = False
 
     # these are expensive calls. update every 10s
     if (count % int(10. / DT_TRML)) == 0:
@@ -266,6 +276,7 @@ def thermald_thread():
         network_strength = HARDWARE.get_network_strength(network_type)
         network_info = HARDWARE.get_network_info()  # pylint: disable=assignment-from-none
         nvme_temps = HARDWARE.get_nvme_temps()
+        wifiIpAddress = HARDWARE.get_ip_address()
 
         # Log modem version once
         if modem_version is None:
@@ -289,6 +300,7 @@ def thermald_thread():
     msg.deviceState.freeSpacePercent = get_available_percent(default=100.0)
     msg.deviceState.memoryUsagePercent = int(round(psutil.virtual_memory().percent))
     msg.deviceState.cpuUsagePercent = [int(round(n)) for n in psutil.cpu_percent(percpu=True)]
+    msg.deviceState.cpuUsagePercentDEPRECATED = int(round(psutil.cpu_percent()))    
     msg.deviceState.gpuUsagePercent = int(round(HARDWARE.get_gpu_usage_percent()))
     msg.deviceState.networkType = network_type
     msg.deviceState.networkStrength = network_strength
@@ -297,6 +309,9 @@ def thermald_thread():
     if nvme_temps is not None:
       msg.deviceState.nvmeTempC = nvme_temps
 
+    msg.deviceState.wifiIpAddress = wifiIpAddress
+    msg.deviceState.batteryStatusDEPRECATED = HARDWARE.get_battery_status()
+    msg.deviceState.batteryVoltageDEPRECATED = HARDWARE.get_battery_voltage()
     msg.deviceState.batteryPercent = HARDWARE.get_battery_capacity()
     msg.deviceState.batteryCurrent = HARDWARE.get_battery_current()
     msg.deviceState.usbOnline = HARDWARE.get_usb_present()
@@ -343,7 +358,12 @@ def thermald_thread():
     update_failed_count = 0 if update_failed_count is None else int(update_failed_count)
     last_update_exception = params.get("LastUpdateException", encoding='utf8')
 
-    if update_failed_count > 15 and last_update_exception is not None:
+    enableLogger = params.get_bool("UploadRaw")
+    if not enableLogger:
+      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
+      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
+      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
+    elif update_failed_count > 15 and last_update_exception is not None:
       if tested_branch:
         extra_text = "Ensure the software is correctly installed"
       else:
@@ -420,7 +440,8 @@ def thermald_thread():
     if power_monitor.should_shutdown(pandaState, off_ts, started_seen):
       cloudlog.info(f"shutting device down, offroad since {off_ts}")
       # TODO: add function for blocking cloudlog instead of sleep
-      time.sleep(10)
+      HARDWARE.set_battery_charging(False)
+      time.sleep(5)
       HARDWARE.shutdown()
 
     # If UI has crashed, set the brightness to reasonable non-zero value
@@ -447,6 +468,16 @@ def thermald_thread():
 
     should_start_prev = should_start
     startup_conditions_prev = startup_conditions.copy()
+
+    battery_changing = HARDWARE.get_battery_charging()
+    usbOnline = HARDWARE.get_usb_present()
+
+    #if pandaState is not None:
+    #  print( "  pandaState={} ".format( pandaState ) )
+
+    #print( "  usb_power={}  usbOnline={} battery_changing={}".format( usb_power, usbOnline, battery_changing ) )
+    if usbOnline and usb_power:
+      power_monitor.charging_ctrl( msg, ts, 60, 40 )    
 
     # report to server once every 10 minutes
     if (count % int(600. / DT_TRML)) == 0:

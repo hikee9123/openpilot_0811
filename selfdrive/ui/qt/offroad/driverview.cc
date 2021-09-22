@@ -1,11 +1,15 @@
 #include "selfdrive/ui/qt/offroad/driverview.h"
 
 #include <QPainter>
+#include <QProcess>
 
 #include "selfdrive/ui/qt/qt_window.h"
 #include "selfdrive/ui/qt/util.h"
 
 const int FACE_IMG_SIZE = 130;
+
+const Rect d_rec_btn = {1745, 905, 140, 140};
+extern bool lock_current_video;
 
 DriverViewWindow::DriverViewWindow(QWidget* parent) : QWidget(parent) {
   setAttribute(Qt::WA_OpaquePaintEvent);
@@ -22,6 +26,25 @@ DriverViewWindow::DriverViewWindow(QWidget* parent) : QWidget(parent) {
 }
 
 void DriverViewWindow::mouseReleaseEvent(QMouseEvent* e) {
+
+
+  if (d_rec_btn.ptInRect(e->x(), e->y())) {
+    if( lock_current_video )
+      lock_current_video = 0;
+    else
+      lock_current_video = 2;
+
+    /*   
+    if (lock_current_video) {
+      system(qPrintable("screenrecord --size 960x540 --bit-rate 3000000 /storage/emulated/0/videos/drv_mon_preview.mp4&"));
+    } else {
+      QProcess::execute("killall -SIGINT screenrecord");
+    }
+    */
+    return;
+  }
+
+
   emit done();
 }
 
@@ -37,6 +60,13 @@ void DriverViewScene::showEvent(QShowEvent* event) {
 
 void DriverViewScene::hideEvent(QHideEvent* event) {
   params.putBool("IsDriverViewEnabled", false);
+
+/*
+  if (lock_current_video) {
+    lock_current_video = 0;
+    QProcess::execute("killall -SIGINT screenrecord");
+  }
+*/  
 }
 
 void DriverViewScene::frameUpdated() {
@@ -93,4 +123,39 @@ void DriverViewScene::paintEvent(QPaintEvent* event) {
   const int img_y = rect2.bottom() - FACE_IMG_SIZE - img_offset;
   p.setOpacity(face_detected ? 1.0 : 0.3);
   p.drawImage(img_x, img_y, face_img);
+
+  // opkr
+  if (frame_updated) {
+    p.setPen(QColor(0xff, 0xff, 0xff));
+    p.setOpacity(1.0);
+    p.setRenderHint(QPainter::TextAntialiasing);
+    configFont(p, "Open Sans", 50, "Regular");
+    p.drawText(1050, 50, "faceProb:  " + QString::number(driver_state.getFaceProb(), 'f', 2));
+    
+    p.drawText(1050, 150, "leftEyeProb:  " + QString::number(driver_state.getLeftEyeProb(), 'f', 2));
+    p.drawText(1050, 200, "rightEyeProb:  " + QString::number(driver_state.getRightEyeProb(), 'f', 2));
+    p.drawText(1050, 250, "leftBlinkProb:  " + QString::number(driver_state.getLeftBlinkProb(), 'f', 2));
+    p.drawText(1050, 300, "rightBlinkProb:  " + QString::number(driver_state.getRightBlinkProb(), 'f', 2));
+    
+    p.drawText(1050, 400, "distractedPose:  " + QString::number(driver_state.getDistractedPose(), 'f', 2));
+    p.drawText(1050, 450, "distractedEyes:  " + QString::number(driver_state.getDistractedEyes(), 'f', 2));
+
+    p.drawText(1050, 550, "sunglassesProb:  " + QString::number(driver_state.getSunglassesProb(), 'f', 2));
+    p.drawText(1050, 600, "poorVision:  " + QString::number(driver_state.getPoorVision(), 'f', 2));
+    p.drawText(1050, 650, "partialFace:  " + QString::number(driver_state.getPartialFace(), 'f', 2));
+    p.drawText(1050, 700, "eyesOnRoad:  " + QString::number(driver_state.getEyesOnRoad(), 'f', 2));
+    p.drawText(1050, 750, "phoneUse:  " + QString::number(driver_state.getPhoneUse(), 'f', 2));
+
+
+    QRect rec = {d_rec_btn.x, d_rec_btn.y, d_rec_btn.w, d_rec_btn.h}; // d_rec_btn;// 
+    p.setBrush(Qt::NoBrush);
+    //if (m_binfill) p.setBrush(Qt::red);
+
+    if (lock_current_video) p.setBrush(Qt::red);
+    p.setPen(QPen(QColor(255, 255, 255, 80), 6));
+    p.drawEllipse(rec);
+    p.setPen(QColor(255, 255, 255, 200));
+    p.drawText(rec, Qt::AlignCenter, QString("REC"));
+
+  }
 }
