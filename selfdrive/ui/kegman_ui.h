@@ -543,7 +543,7 @@ static void bb_ui_draw_UI(UIState *s)
   bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y, bb_dmr_w);
 
   // 2. tpms
-  if( 0 )
+  if( 1 )
   {
     int viz_tpms_x = bdr_s + 80;
     int viz_tpms_y = s->fb_h - bdr_s - 60;  
@@ -551,7 +551,7 @@ static void bb_ui_draw_UI(UIState *s)
   }
 
   // 3. compass
-  if( 0 )
+  if( 1 )
   {
     const int compass_x = 1920 / 2 - 20;
     const int compass_y = 1080 - 40;
