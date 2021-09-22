@@ -50,6 +50,7 @@ class CarState(CarStateBase):
     self.time_break = 0
 
   def engage_disable( self, ret ):
+    steeringTorque  = abs( ret.steeringTorque )
     steeringAngleDeg = abs( ret.steeringAngleDeg )
 
     if ret.brakePressed:
@@ -57,11 +58,11 @@ class CarState(CarStateBase):
     elif self.time_break > 0:
       self.time_break -= 1
 
-    limitAngleDeg = 50
+    limitAngleDeg = 80
     if self.time_break:
-      limitAngleDeg = 10
+      limitAngleDeg = 50
 
-    if not self.acc_mode and self.clu_Vanz < 40 and steeringAngleDeg > limitAngleDeg and ret.steeringPressed:
+    if not self.acc_mode and self.clu_Vanz < 40 and steeringAngleDeg > limitAngleDeg and steeringTorque > 250:
        return True
 
     return False
@@ -92,7 +93,7 @@ class CarState(CarStateBase):
         pass
       elif ret.vEgo < 5 or not left_lane or not right_lane or ret.steeringPressed or ret.leftBlinker or ret.rightBlinker:  # 15 km/h
         self.time_delay_int = 100
-      elif self.time_delay_int <= 0 and  not self.gasPressed:
+      elif self.time_delay_int <= 0:
         self.engage_enable = True
 
       return  self.engage_enable
