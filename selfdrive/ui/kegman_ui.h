@@ -42,6 +42,21 @@ static void ui_draw_track(UIState *s, const line_vertices_data &vd)
 }
 */
 
+
+/*
+static void bb_ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
+
+  if( font_name )
+  {
+    nvgFontFace(s->vg, font_name);
+    nvgFontSize(s->vg, size);
+  }
+
+  nvgFillColor(s->vg, color);
+  nvgText(s->vg, x, y, string, NULL);
+}
+*/
+
 static void ui_draw_circle_image_rotation(const UIState *s, int center_x, int center_y, int radius, const char *image, NVGcolor color, float img_alpha, float angleSteers = 0) {
   const int img_size = radius * 1.5;
   float img_rotation =  angleSteers/180*3.141592;
@@ -59,19 +74,6 @@ static void ui_draw_circle_image_rotation(const UIState *s, int center_x, int ce
 
   ui_draw_image(s, {ct_pos, ct_pos, img_size, img_size}, image, img_alpha);
   nvgRestore(s->vg); 
-}
-
-
-static void bb_ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
-
-  if( font_name )
-  {
-    nvgFontFace(s->vg, font_name);
-    nvgFontSize(s->vg, size);
-  }
-
-  nvgFillColor(s->vg, color);
-  nvgText(s->vg, x, y, string, NULL);
 }
 
 //BB START: functions added for the display of various items
