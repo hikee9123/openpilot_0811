@@ -517,7 +517,7 @@ static void bb_draw_compass(UIState *s, int compass_x, int compass_y )
   //float  gpsAccuracyUblox = gps_ext.getAccuracy();
   //float  altitudeUblox = gps_ext.getAltitude();
   float  bearingUblox = gps_ext.getBearingDeg();
-  float  fAlpha = 1.0f
+  //float  fAlpha = 1.0f;
 
   //if ( gpsAccuracyUblox == 0.00 )
   //    fAlpha = 0.2f
