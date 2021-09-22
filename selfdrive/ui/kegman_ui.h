@@ -553,7 +553,9 @@ static void bb_ui_draw_UI(UIState *s)
   // 3. compass
   const int compass_x = 1920 / 2 - 20;
   const int compass_y = 1080 - 40;
-  bb_draw_compass( s, compass_x, compass_y );
+
+  if( 0 )
+    bb_draw_compass( s, compass_x, compass_y );
 
   // 4. debug
   int xpos = 250;
