@@ -23,13 +23,13 @@ class HardwareBase:
   @staticmethod
   def get_nvme_temps():
     ret = []
-    try:
-      #out = subprocess.check_output("sudo smartctl -aj /dev/nvme0", shell=True)
-      out = subprocess.check_output("smartctl -aj /dev/nvme0", shell=True)
-      dat = json.loads(out)
-      ret = list(map(int, dat["nvme_smart_health_information_log"]["temperature_sensors"]))
-    except Exception:
-      pass
+    #try:
+    #  #out = subprocess.check_output("sudo smartctl -aj /dev/nvme0", shell=True)
+    #  out = subprocess.check_output("smartctl -aj /dev/nvme0", shell=True)
+    #  dat = json.loads(out)
+    #  ret = list(map(int, dat["nvme_smart_health_information_log"]["temperature_sensors"]))
+    #except Exception:
+    #  pass
     return ret
 
   @abstractmethod

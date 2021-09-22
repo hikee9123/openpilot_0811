@@ -543,20 +543,21 @@ static void bb_ui_draw_UI(UIState *s)
   bb_ui_draw_measures_right(s, bb_dmr_x, bb_dmr_y, bb_dmr_w);
 
   // 2. tpms
- // int viz_tpms_x = s->fb_w - (bdr_s+425);
-  //int viz_tpms_y = bdr_s + 35;
-  int viz_tpms_x = bdr_s + 80;
-  int viz_tpms_y = s->fb_h - bdr_s - 60;  
   if( 0 )
-  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y);
-//  bb_draw_tpms( s, viz_tpms_x, viz_tpms_y );
+  {
+    int viz_tpms_x = bdr_s + 80;
+    int viz_tpms_y = s->fb_h - bdr_s - 60;  
+    bb_draw_tpms( s, viz_tpms_x, viz_tpms_y);
+  }
 
   // 3. compass
-  const int compass_x = 1920 / 2 - 20;
-  const int compass_y = 1080 - 40;
-
   if( 0 )
+  {
+    const int compass_x = 1920 / 2 - 20;
+    const int compass_y = 1080 - 40;
     bb_draw_compass( s, compass_x, compass_y );
+  }
+    
 
   // 4. debug
   int xpos = 250;
