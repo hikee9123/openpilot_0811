@@ -325,9 +325,9 @@ void ui_nvg_init(UIState *s) {
   };
   for (auto [name, file] : images) {
     s->images[name] = nvgCreateImage(s->vg, file, 1);
-    if( s->images[name] == NULL )
+    if( s->images[name] == 0 )
     {
-      printf("images name = %s\n", file);
+      printf("images is NULL FileName = %s\n", file);
     }
     assert(s->images[name] != 0);
   }
