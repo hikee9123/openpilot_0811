@@ -177,7 +177,7 @@ class NaviControl():
     if CS.gasPressed == self.gasPressed_old:
       return ctrl_speed
     elif self.gasPressed_old:
-      dRate = interp( modelSpeed, [100,450], [ 0.9, 1 ] )
+      dRate = interp( modelSpeed, [80,450], [ 0.9, 1 ] )
       clu_Vanz = CS.clu_Vanz * dRate
       ctrl_speed = max( ctrl_speed, clu_Vanz )
       CS.set_cruise_speed( ctrl_speed )
