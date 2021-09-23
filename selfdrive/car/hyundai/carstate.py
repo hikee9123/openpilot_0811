@@ -114,7 +114,7 @@ class CarState(CarStateBase):
 
     return  self.engage_enable
 
-  def set_cruise_speed( self, set_speed )
+  def set_cruise_speed( self, set_speed ):
     self.cruise_set_speed_kph = set_speed
 
   #@staticmethod
