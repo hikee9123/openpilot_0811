@@ -136,7 +136,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed
-    #lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
+    # lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
     path_plan = self.NC.update_lateralPlan()    
     lkas_active = self.lkas_active_control( enabled, CS, path_plan )
 
@@ -151,7 +151,6 @@ class CarController():
 
     str_log1 = 'LKAS={:2.0f} SL={:.1f}'.format(  CS.lkas_button_on,  CS.SpeedLim_Nav_Clu   )
     trace1.printf2( '{}'.format( str_log1 ) )
-
     str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway )
     trace1.printf3( '{}'.format( str_log1 ) )
 
@@ -191,7 +190,7 @@ class CarController():
       self.last_lead_distance = 0
 
     elif CS.out.cruiseState.accActive:
-      btn_signal = self.NC.update( CS )
+      btn_signal = self.NC.update( CS, path_plan )
       if btn_signal != None:
         can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
         self.resume_cnt += 1

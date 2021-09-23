@@ -114,6 +114,9 @@ class CarState(CarStateBase):
 
     return  self.engage_enable
 
+  def set_cruise_speed( self, set_speed )
+    self.cruise_set_speed_kph = set_speed
+
   #@staticmethod
   def cruise_speed_button( self ):
     if self.prev_acc_active != self.acc_active:
