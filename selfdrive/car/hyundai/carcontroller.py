@@ -129,7 +129,7 @@ class CarController():
     right_lane = c.hudControl.rightLaneVisible 
     left_lane_warning = c.hudControl.leftLaneDepart 
     right_lane_warning = c.hudControl.rightLaneDepart
-    vFuture = c.hudControl.vFuture
+    vFuture = c.hudControl.vFuture * 3.6
     
     # Steering Torque
     new_steer = int(round(actuators.steer * self.p.STEER_MAX))
