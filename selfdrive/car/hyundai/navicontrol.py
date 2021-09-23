@@ -172,7 +172,7 @@ class NaviControl():
     return  cruise_set_speed_kph
 
 
-  def auto_speed_control( self, ctrl_speed, path_plan ):
+  def auto_speed_control( self, CS, ctrl_speed, path_plan ):
     modelSpeed = path_plan.modelSpeed
     if CS.gasPressed == self.gasPressed_old:
       return ctrl_speed
@@ -200,7 +200,7 @@ class NaviControl():
       self.ctrl_speed = min( cruiseState_speed, kph_set_vEgo)
 
       if CS.cruise_set_mode == 1:
-        self.ctrl_speed = self.auto_speed_control( self.ctrl_speed, path_plan )
+        self.ctrl_speed = self.auto_speed_control( CS, self.ctrl_speed, path_plan )
 
 
 
