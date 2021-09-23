@@ -172,15 +172,17 @@ class NaviControl():
     return  cruise_set_speed_kph
 
 
-  def auto_speed_control( self, CS, ctrl_speed, path_plan ):
+  def auto_speed_control( self, c, CS, ctrl_speed, path_plan ):
     modelSpeed = path_plan.modelSpeed
     if CS.gasPressed == self.gasPressed_old:
       return ctrl_speed
     elif self.gasPressed_old:
-      #dRate = interp( modelSpeed, [80,450], [ 0.9, 1 ] )
       clu_Vanz = CS.clu_Vanz  #* dRate
       ctrl_speed = max( ctrl_speed, clu_Vanz )
       CS.set_cruise_speed( ctrl_speed )
+    elif CS.cruise_set_mode == 2:
+      vFuture = c.hudControl.vFuture * CV.MS_TO_KPH
+      ctrl_speed = vFuture
     else:
       dRate = interp( modelSpeed, [80,200], [ 0.9, 1 ] )
       ctrl_speed *= dRate
@@ -189,7 +191,7 @@ class NaviControl():
     return  ctrl_speed
 
 
-  def update(self,  CS, path_plan ):  
+  def update(self, c, CS, path_plan ):  
     # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
     btn_signal = None
     if not self.button_status( CS  ):
@@ -199,8 +201,8 @@ class NaviControl():
       kph_set_vEgo = self.get_navi_speed(  self.sm , CS, cruiseState_speed )
       self.ctrl_speed = min( cruiseState_speed, kph_set_vEgo)
 
-      if CS.cruise_set_mode == 1:
-        self.ctrl_speed = self.auto_speed_control( CS, self.ctrl_speed, path_plan )
+      if CS.cruise_set_mode:
+        self.ctrl_speed = self.auto_speed_control( c, CS, self.ctrl_speed, path_plan )
 
 
 

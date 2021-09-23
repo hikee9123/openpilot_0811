@@ -191,7 +191,7 @@ class CarController():
       self.last_lead_distance = 0
 
     elif CS.out.cruiseState.accActive:
-      btn_signal = self.NC.update( CS, path_plan )
+      btn_signal = self.NC.update( c, CS, path_plan )
       if btn_signal != None:
         can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
         self.resume_cnt += 1
