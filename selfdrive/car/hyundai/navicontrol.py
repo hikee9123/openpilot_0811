@@ -184,7 +184,7 @@ class NaviControl():
 
       #if CS.cruise_set_mode == 1:
       if CS.cruise_set_mode == 1:
-        if( CS.out.gasPressed )
+        if CS.out.gasPressed:
           self.ctrl_speed = max( self.ctrl_speed, CS.clu_Vanz )
         #kph_fwd_speed = self.get_forword_car_speed( CS,  cruiseState_speed)
         #self.ctrl_speed = min( self.ctrl_speed, kph_fwd_speed)
