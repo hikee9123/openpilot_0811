@@ -569,12 +569,12 @@ static void bb_ui_draw_UI(UIState *s)
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));    
 
 
-  //if( scene.liveParameters.getValid() )
-  //{
+  if( false )
+  {
     ui_print(s, xpos, ypos+50, "sR:%.3f", scene.liveParameters.getSteerRatio() );
     ui_print(s, xpos, ypos+100, "mS:%.1f", scene.lateralPlan.getModelSpeed() * 3.6 );
 
- // }
+  }
 
 }
 //BB END: functions added for the display of various items
