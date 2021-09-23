@@ -129,6 +129,7 @@ class CarController():
     right_lane = c.hudControl.rightLaneVisible 
     left_lane_warning = c.hudControl.leftLaneDepart 
     right_lane_warning = c.hudControl.rightLaneDepart
+    vFuture = CC.hudControl.vFuture
     
     # Steering Torque
     new_steer = int(round(actuators.steer * self.p.STEER_MAX))
@@ -149,7 +150,7 @@ class CarController():
     self.apply_steer_last = apply_steer
     sys_warning, sys_state = self.process_hud_alert( lkas_active, c )
 
-    str_log1 = 'LKAS={:2.0f} SL={:.1f}'.format(  CS.lkas_button_on,  CS.SpeedLim_Nav_Clu   )
+    str_log1 = 'LKAS={:2.0f} SL={:.1f} vF={:.1f}'.format(  CS.lkas_button_on,  CS.SpeedLim_Nav_Clu, vFuture )
     trace1.printf2( '{}'.format( str_log1 ) )
     str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway )
     trace1.printf3( '{}'.format( str_log1 ) )

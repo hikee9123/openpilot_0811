@@ -187,7 +187,7 @@ class Controls:
       if modelSpeed:
         dRate = interp( modelSpeed, [200,450], [ 1, 0.9 ] )
         steerRatio = learnerSteerRatio * dRate
-        str_log1 = 'MD={:3.0f} lsR={:5.2f} sR={:5.2f}'.format( modelSpeed, learnerSteerRatio,  steerRatio   )
+        str_log1 = 'MD={:3.0f} lsR={:8.5f} sR={:8.5f}'.format( modelSpeed, learnerSteerRatio,  steerRatio   )
         trace1.printf1( '{}'.format( str_log1 ) )
     steerRatio = clip( steerRatio, 13.5, 19.5 )
 
@@ -569,6 +569,13 @@ class Controls:
     left_lane_visible = self.sm['lateralPlan'].lProb > 0.5
     CC.hudControl.rightLaneVisible = bool(right_lane_visible)
     CC.hudControl.leftLaneVisible = bool(left_lane_visible)
+
+    speeds = self.sm['longitudinalPlan'].speeds
+    if len(speeds) > 1:
+      v_future = speeds[-1]
+    else:
+      v_future = 100.0
+    CC.hudControl.vFuture = v_future
 
     recent_blinker = (self.sm.frame - self.last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
     ldw_allowed = self.is_ldw_enabled and CS.vEgo > LDW_MIN_SPEED and not recent_blinker \
