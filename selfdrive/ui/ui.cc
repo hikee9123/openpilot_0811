@@ -344,7 +344,7 @@ void Device::updateBrightness(const UIState &s) {
   int brightness = brightness_filter.update(clipped_brightness);
   if (!awake) {
     brightness = 0;
-  } else if (s.scene.started && scene.scr.nTime <= 0 && s.scene.autoScreenOff != 0) {
+  } else if (s.scene.started && scene.scr.nTime <= 0 && scene.scr.autoScreenOff != 0) {
     brightness = s.scene.scr.brightness_off * 0.01 * brightness;
   }
   // scene.scr.brightness_off
@@ -388,6 +388,10 @@ void Device::ScreenAwake()
   {
     awake_timeout = 30 * UI_FREQ;
     scene.scr.nTime--;
+  }
+  else if( scene.scr.brightness_off )
+  {
+    awake_timeout = 30 * UI_FREQ;
   }
   else if( scene.ignition && (speed < 1))
   {
