@@ -344,7 +344,7 @@ void Device::updateBrightness(const UIState &s) {
   int brightness = brightness_filter.update(clipped_brightness);
   if (!awake) {
     brightness = 0;
-  } else if (s.scene.started && scene.scr.nTime <= 0 && scene.scr.autoScreenOff != 0) {
+  } else if (s.scene.started && s.scene.scr.nTime <= 0 && s.scene.scr.autoScreenOff != 0) {
     brightness = s.scene.scr.brightness_off * 0.01 * brightness;
   }
   // scene.scr.brightness_off
