@@ -554,6 +554,73 @@ void AutoScreenOff::refresh()
 }
 
 
+BrightnessOffControl::BrightnessOffControl() : AbstractControl("EON 화면끄기 밝기(%)", "EON 화면 꺼짐 기능 사용시 자동밝기 비율에 따라 밝기를 감소시킵니다.", "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("OpkrUIBrightnessOff"));
+    int value = str.toInt();
+    value = value - 10;
+    if (value <= 0 ) {
+      value = 0;
+    }
+    QUIState::ui_state.scene.scr.brightness_off = value;
+    QString values = QString::number(value);
+    params.put("OpkrUIBrightnessOff", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("OpkrUIBrightnessOff"));
+    int value = str.toInt();
+    value = value + 10;
+    if (value >= 100 ) {
+      value = 100;
+    }
+    QUIState::ui_state.scene.brightness_off = value;
+    QString values = QString::number(value);
+    params.put("OpkrUIBrightnessOff", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void BrightnessOffControl::refresh() {
+  QString option = QString::fromStdString(params.get("OpkrUIBrightnessOff"));
+  if (option == "0") {
+    label.setText(QString::fromStdString("완전꺼짐"));
+  } else {
+    label.setText(QString::fromStdString(params.get("OpkrUIBrightnessOff")));
+  }
+  btnminus.setText("－");
+  btnplus.setText("＋");
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Auto Focus

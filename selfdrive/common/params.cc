@@ -212,6 +212,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"OpkrLiveSteerRatio", PERSISTENT},
     {"OpkrTurnSteeringDisable", PERSISTENT},
     {"PutPrebuiltOn", PERSISTENT},
+    {"OpkrUIBrightnessOff", PERSISTENT},
     {"OpkrAutoScreenOff", PERSISTENT},
     {"OpkrUIBrightness", PERSISTENT},
     {"OpkrUIVolumeBoost", PERSISTENT},  

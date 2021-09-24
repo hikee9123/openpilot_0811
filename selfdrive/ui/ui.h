@@ -135,7 +135,8 @@ typedef struct UIScene {
      int  nTime;
      int  map_is_running, map_command_on, map_command_off;
      int  map_on_overlay;
-     int  autoScreenOff;
+     int  autoScreenOff;  // time
+     int  brightness_off;  // light value
      int  autoFocus;
      int  brightness;
      int  nVolumeBoost;
