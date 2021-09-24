@@ -602,7 +602,7 @@ BrightnessOffControl::BrightnessOffControl() : AbstractControl("EON 화면끄기
     if (value >= 100 ) {
       value = 100;
     }
-    QUIState::ui_state.scene.brightness_off = value;
+    QUIState::ui_state.scene.scr.brightness_off = value;
     QString values = QString::number(value);
     params.put("OpkrUIBrightnessOff", values.toStdString());
     refresh();
