@@ -42,7 +42,7 @@ def manager_init():
     ("OpkrLiveSteerRatio", "0"),
     ("OpkrTurnSteeringDisable", "0"),
     ("PutPrebuiltOn", "0"),
-    //{"OpkrUIBrightnessOff", "10" },
+    # {"OpkrUIBrightnessOff", "10" },
     ("OpkrAutoScreenOff", "0"),
     ("OpkrAutoFocus", "0"),
     ("OpkrUIBrightness", "0"),
