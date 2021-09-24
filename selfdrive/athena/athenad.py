@@ -11,6 +11,7 @@ import select
 import socket
 import threading
 import time
+import subprocess
 from collections import namedtuple
 from functools import partial
 from typing import Any
@@ -547,6 +548,17 @@ def main():
 
   conn_retries = 0
   while 1:
+    """
+    try:
+      ping_test = subprocess.check_output(["ping", "-c", "1", "-W", "1", "google.com"])
+      if ping_test:
+        last_ping = int(sec_since_boot() * 1e9)
+        params.put("LastAthenaPingTime", str(last_ping))          
+    except Exception:
+      params.delete("LastAthenaPingTime")
+    """
+
+
     try:
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
       ws = create_connection(ws_uri,
