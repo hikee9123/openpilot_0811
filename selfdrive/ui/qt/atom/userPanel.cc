@@ -115,6 +115,8 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
   layout()->addWidget(new BrightnessControl());
   layout()->addWidget(new CVolumeControl());  
   layout()->addWidget(new AutoScreenOff());
+  layout()->addWidget(new BrightnessOffControl());
+  
   layout()->addWidget(new CAutoFocus());
 
   layout()->addWidget(horizontal_line());
