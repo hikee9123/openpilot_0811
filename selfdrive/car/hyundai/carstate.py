@@ -240,7 +240,7 @@ class CarState(CarStateBase):
 
     self.cruise_available = cp.vl["SCC11"]["MainMode_ACC"] == 1
     self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0
-    if self.cruise_set_mode == 2:
+    if self.cruise_set_mode == 4:
       ret.cruiseState.available = False
     else:
       ret.cruiseState.available = self.cruise_available

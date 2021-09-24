@@ -174,15 +174,15 @@ class NaviControl():
 
   def auto_speed_control( self, c, CS, ctrl_speed, path_plan ):
     modelSpeed = path_plan.modelSpeed
-    if CS.gasPressed == self.gasPressed_old:
+    if CS.cruise_set_mode == 2:
+      vFuture = c.hudControl.vFuture * CV.MS_TO_KPH
+      ctrl_speed = vFuture    
+    elif CS.gasPressed == self.gasPressed_old:
       return ctrl_speed
     elif self.gasPressed_old:
       clu_Vanz = CS.clu_Vanz  #* dRate
       ctrl_speed = max( ctrl_speed, clu_Vanz )
       CS.set_cruise_speed( ctrl_speed )
-    elif CS.cruise_set_mode == 2:
-      vFuture = c.hudControl.vFuture * CV.MS_TO_KPH
-      ctrl_speed = vFuture
     else:
       dRate = interp( modelSpeed, [80,200], [ 0.9, 1 ] )
       ctrl_speed *= dRate
