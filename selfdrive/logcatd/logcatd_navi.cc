@@ -199,7 +199,11 @@ int main() {
           event.dArrivalTimeSec = event.dHideTimeSec - dCurrentSec;
           event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
           dArrivalDistanceStop = event.dArrivalDistance;
-          if( dEventLastSec > 4 )   opkr = 0;
+          if( dSpeed_ms < 10 )
+          {
+            if( dEventLastSec > 5 ) opkr = 0;
+          } 
+          else if( dEventLastSec > 3 )   opkr = 0;          
           else if( event.dArrivalTimeSec < 1.5 )  opkr = 0;
         }
         else
