@@ -150,7 +150,7 @@ int main() {
       if( nDelta2 >= 5 )
       {
         nLastTime = entry.tv_sec;
-        event.mapEnable = Params().getInt("OpkrMapEnable");
+       // event.mapEnable = Params().getInt("OpkrMapEnable");
       }
       
 
