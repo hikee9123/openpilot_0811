@@ -168,7 +168,7 @@ class CarController():
                                    left_lane, right_lane,
                                    left_lane_warning, right_lane_warning))
     #if apply_steer:
-    if candidate == CAR.SANTA_FE:
+    lf.car_fingerprint in FEATURES["send_hda_mfa"]::
       can_sends.append( create_mdps12(self.packer, frame, CS.mdps12) )
 
     if pcm_cancel_cmd:
