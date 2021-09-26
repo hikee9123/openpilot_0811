@@ -57,6 +57,8 @@ UploadItem = namedtuple('UploadItem', ['path', 'url', 'headers', 'created_at', '
 cur_upload_items = {}
 
 
+
+
 def handle_long_poll(ws):
   end_event = threading.Event()
 
@@ -548,7 +550,7 @@ def main():
 
   conn_retries = 0
   while 1:
-    """
+    
     try:
       ping_test = subprocess.check_output(["ping", "-c", "1", "-W", "1", "google.com"])
       if ping_test:
@@ -556,9 +558,9 @@ def main():
         params.put("LastAthenaPingTime", str(last_ping))          
     except Exception:
       params.delete("LastAthenaPingTime")
+    
+
     """
-
-
     try:
       cloudlog.event("athenad.main.connecting_ws", ws_uri=ws_uri)
       ws = create_connection(ws_uri,
@@ -595,7 +597,8 @@ def main():
       conn_retries += 1
       params.delete("PrimeRedirected")
       params.delete("LastAthenaPingTime")
-
+    """
+    
     time.sleep(backoff(conn_retries))
 
 
