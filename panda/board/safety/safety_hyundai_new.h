@@ -81,7 +81,7 @@ static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
     cnt = (GET_BYTE(to_push, 1) >> 5) & 0x7;
   } else if (addr == 1057) {
     cnt = GET_BYTE(to_push, 7) & 0xF;
-  } else if (addr == 1265) {
+  } else if ( hyundai_longitudinal && addr == 1265) {
     cnt = (GET_BYTE(to_push, 3) >> 4) & 0xF;
   } else {
     cnt = 0;
