@@ -102,7 +102,7 @@ int main() {
   int      opkr =0;
   double   dArrivalDistanceStop = 0;
 
-  double  dEventLastSec;
+  double  dEventLastSec, dEventHideSec;
   double  dCurrentSec;
 
   ExitHandler do_exit;
@@ -199,11 +199,14 @@ int main() {
           event.dArrivalTimeSec = event.dHideTimeSec - dCurrentSec;
           event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
           dArrivalDistanceStop = event.dArrivalDistance;
-          if( dSpeed_ms < 10 )
-          {
-            if( dEventLastSec > 5 ) opkr = 0;
-          } 
-          else if( dEventLastSec > 3 )   opkr = 0;          
+
+
+          
+          if( dSpeed_ms < 10 )  dEventHideSec = 5;
+          else if( dSpeed_ms < 20 )  dEventHideSec = 4;
+          else dEventHideSec = 3;
+
+          if( dEventLastSec > dEventHideSec )   opkr = 0;          
           else if( event.dArrivalTimeSec < 1.5 )  opkr = 0;
         }
         else
