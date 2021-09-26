@@ -317,7 +317,10 @@ class CarState(CarStateBase):
     self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
     self.is_highway = self.lfahda["HDA_Icon_State"] != 0.
 
-    self.SpeedLim_Nav_Clu = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"]
+
+
+
+
 
     return ret
 
@@ -401,8 +404,6 @@ class CarState(CarStateBase):
       ("PRESSURE_FR", "TPMS11", 0),
       ("PRESSURE_RL", "TPMS11", 0),
       ("PRESSURE_RR", "TPMS11", 0),
-
-      ("SpeedLim_Nav_Clu", "Navi_HU", 0),
     ]
 
     checks = [
@@ -522,6 +523,7 @@ class CarState(CarStateBase):
       ("HDA_Icon_State", "LFAHDA_MFC", 0),
       ("HDA_LdwSysState", "LFAHDA_MFC", 0),
       ("HDA_Icon_Wheel", "LFAHDA_MFC", 0),
+      ("HDA_VSetReq", "LFAHDA_MFC", 0),
     ]
 
     checks = [

@@ -119,6 +119,17 @@ class CarController():
     return  int(round(float(apply_torque)))
 
 
+  def update_debug(self, CS, vFuture ):
+    cruiseSwState = CS.clu11["CF_Clu_CruiseSwState"]
+    cruiseSwMain = CS.clu11["CF_Clu_CruiseSwMain"]
+    sldMainSW = CS.clu11["CF_Clu_SldMainSW"]
+    hdaVSetReq = self.lfahda["HDA_VSetReq"]    
+
+    str_log1 = 'MODE={:.0f} GAP={:.0f} hda={:.1f} vF={:.1f}'.format(  CS.cruise_set_mode, CS.out.cruiseState.gapSet, hdaVSetReq, vFuture )
+    trace1.printf2( '{}'.format( str_log1 ) )
+
+    str_log1 = 'SW1={:.0f},{:.0f},{:.0f}'.format( cruiseSwState, cruiseSwMain, sldMainSW )
+    trace1.printf3( '{}'.format( str_log1 ) )    
 
   def update(self, c, CS, frame ):
     enabled = c.enabled
@@ -150,10 +161,7 @@ class CarController():
     self.apply_steer_last = apply_steer
     sys_warning, sys_state = self.process_hud_alert( lkas_active, c )
 
-    str_log1 = 'LKAS={:2.0f} SL={:.1f} vF={:.1f}'.format(  CS.lkas_button_on,  CS.SpeedLim_Nav_Clu, vFuture )
-    trace1.printf2( '{}'.format( str_log1 ) )
-    str_log1 = 'MODE={:.0f} GAP={:.0f} HW={:.0f}'.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet, CS.is_highway )
-    trace1.printf3( '{}'.format( str_log1 ) )
+
 
     if sys_warning and CS.clu_Vanz < 30:
       sys_warning = False
@@ -201,6 +209,7 @@ class CarController():
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0:
+      self.update_debug( CS, vFuture )
       if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
         can_sends.append(create_lfahda_mfc(self.packer, enabled))
       elif self.car_fingerprint in FEATURES["send_hda_mfa"]:
