@@ -198,7 +198,7 @@ static void ui_draw_navi(UIState *s)
 
  
   float speedLimit =  scene.liveNaviData.getSpeedLimit();  
-  float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
+  float speedLimitAheadDistance =  scene.liveNaviData.getArrivalDistance(); // getSpeedLimitDistance();  
   float map_sign = scene.liveNaviData.getSafetySign();
   int   mapValid = scene.liveNaviData.getMapValid();
 

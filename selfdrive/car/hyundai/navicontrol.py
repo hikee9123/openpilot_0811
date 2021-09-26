@@ -147,7 +147,7 @@ class NaviControl():
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH    
     self.liveNaviData = sm['liveNaviData']
     speedLimit = self.liveNaviData.speedLimit
-    speedLimitDistance = self.liveNaviData.speedLimitDistance
+    speedLimitDistance = self.liveNaviData.arrivalDistance  #speedLimitDistance
     safetySign  = self.liveNaviData.safetySign
     mapValid = self.liveNaviData.mapValid
     trafficType = self.liveNaviData.trafficType
