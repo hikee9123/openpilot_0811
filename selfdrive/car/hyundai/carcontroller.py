@@ -123,7 +123,7 @@ class CarController():
     cruiseSwState = CS.clu11["CF_Clu_CruiseSwState"]
     cruiseSwMain = CS.clu11["CF_Clu_CruiseSwMain"]
     sldMainSW = CS.clu11["CF_Clu_SldMainSW"]
-    hdaVSetReq = self.lfahda["HDA_VSetReq"]    
+    hdaVSetReq = CS.lfahda["HDA_VSetReq"]    
 
     str_log1 = 'MODE={:.0f} GAP={:.0f} hda={:.1f} vF={:.1f}'.format(  CS.cruise_set_mode, CS.out.cruiseState.gapSet, hdaVSetReq, vFuture )
     trace1.printf2( '{}'.format( str_log1 ) )
