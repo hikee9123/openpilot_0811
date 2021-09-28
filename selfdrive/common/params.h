@@ -86,7 +86,10 @@ public:  // atom
   {
     int   ret_code = 0;
     std::string result = get( key );
-    ret_code = std::stoi( result );
+    if (result.size() > 0) {
+     // std::stol()
+      ret_code = std::stoi( result );
+    }
     return ret_code;
   }
 };
