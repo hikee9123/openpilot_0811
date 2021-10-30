@@ -1465,7 +1465,7 @@ struct Event {
     logMessage @18 :Text;
 
     # atom NAVI Info
-    liveNaviData @81 :LiveNaviData;
+    liveNaviData @82 :LiveNaviData;
   
     # *********** debug ***********
     testJoystick @52 :Joystick;
