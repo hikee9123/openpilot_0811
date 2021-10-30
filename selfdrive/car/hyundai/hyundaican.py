@@ -117,7 +117,6 @@ def create_hda_mfc(packer, CS, c ):
   # HDA_Icon_State  2 HDA active, 1 HDA available, 0  HDA not available
   # HDA_USM 2 = ?
   # HDA_Active    1 AUTO(icon)==HDA_VSetReq(highway limit speed), 0 HDA(icon)
-
   # HDA_Icon_State 0 = HDA not available
   # HDA_Icon_State 1 = HDA available
   # HDA_Icon_State 2 = HDA active
