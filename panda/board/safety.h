@@ -1,20 +1,22 @@
 // include first, needed by safety policies
 #include "safety_declarations.h"
 // Include the actual safety policies.
-#include "safety/safety_defaults.h"
+//#include "safety/safety_defaults.h"
+#include "safety/safety_defaults_HKG.h"
 #include "safety/safety_honda.h"
 #include "safety/safety_toyota.h"
 #include "safety/safety_tesla.h"
 #include "safety/safety_gm_ascm.h"
 #include "safety/safety_gm.h"
 #include "safety/safety_ford.h"
-#include "safety/safety_hyundai.h"
+#include "safety/safety_hyundai_088.h"
 #include "safety/safety_chrysler.h"
 #include "safety/safety_subaru.h"
 #include "safety/safety_mazda.h"
 #include "safety/safety_nissan.h"
 #include "safety/safety_volkswagen.h"
 #include "safety/safety_elm327.h"
+#include "safety/safety_hyundai_community.h"
 
 // from cereal.car.CarParams.SafetyModel
 #define SAFETY_SILENT 0U
@@ -250,6 +252,7 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_NISSAN, &nissan_hooks},
   {SAFETY_NOOUTPUT, &nooutput_hooks},
   {SAFETY_HYUNDAI_LEGACY, &hyundai_legacy_hooks},
+  {SAFETY_HYUNDAI_COMMUNITY, &hyundai_community_hooks},
 #ifdef ALLOW_DEBUG
   {SAFETY_TESLA, &tesla_hooks},
   {SAFETY_MAZDA, &mazda_hooks},

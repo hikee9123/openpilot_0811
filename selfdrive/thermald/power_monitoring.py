@@ -21,6 +21,9 @@ VBATT_INSTANT_PAUSE_CHARGING = 7.0    # Lower limit on the instant car battery v
 MAX_TIME_OFFROAD_S = 30*3600
 MIN_ON_TIME_S = 3600
 
+
+OPKR_SHUTDOWN_TIME = 3                 # sec
+
 class PowerMonitoring:
   def __init__(self):
     self.params = Params()
@@ -31,6 +34,10 @@ class PowerMonitoring:
     self.car_voltage_mV = 12e3                  # Low-passed version of peripheralState voltage
     self.car_voltage_instant_mV = 12e3          # Last value of peripheralState voltage
     self.integration_lock = threading.Lock()
+
+
+    self.ts_last_charging_ctrl = None
+    self.power_on2_time = 0
 
     car_battery_capacity_uWh = self.params.get("CarBatteryCapacity")
     if car_battery_capacity_uWh is None:
@@ -179,11 +186,23 @@ class PowerMonitoring:
 
     now = sec_since_boot()
     panda_charging = (peripheralState.usbPowerMode != log.PeripheralState.UsbPowerMode.client)
-    BATT_PERC_OFF = 10
+    BATT_PERC_OFF = 50
 
     should_shutdown = False
     # Wait until we have shut down charging before powering down
     should_shutdown |= (not panda_charging and self.should_disable_charging(ignition, in_car, offroad_timestamp))
-    should_shutdown |= ((HARDWARE.get_battery_capacity() < BATT_PERC_OFF) and (not HARDWARE.get_battery_charging()) and ((now - offroad_timestamp) > 60))
+    should_shutdown |= ((HARDWARE.get_battery_capacity() < BATT_PERC_OFF) and (not HARDWARE.get_battery_charging()) and ((now - offroad_timestamp) > 10))
     should_shutdown &= started_seen or (now > MIN_ON_TIME_S)
     return should_shutdown
+
+
+
+  def charging_ctrl(self, msg, ts, to_discharge, to_charge ):
+    if self.ts_last_charging_ctrl is None or (ts - self.ts_last_charging_ctrl) >= 300.:
+      battery_changing = HARDWARE.get_battery_charging()
+      if self.ts_last_charging_ctrl:
+        if msg.deviceState.batteryPercent >= to_discharge and battery_changing:
+          HARDWARE.set_battery_charging(False)
+        elif msg.deviceState.batteryPercent <= to_charge and not battery_changing:
+          HARDWARE.set_battery_charging(True)
+      self.ts_last_charging_ctrl = ts

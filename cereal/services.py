@@ -63,6 +63,9 @@ services = {
   "managerState": (True, 2., 1),
   "uploaderState": (True, 0., 1),
 
+# atom
+  "liveNaviData": (True, 0.),
+
   # debug
   "testJoystick": (False, 0.),
 }

@@ -25,6 +25,8 @@
 #include "selfdrive/ui/qt/util.h"
 #include "selfdrive/ui/qt/qt_window.h"
 
+#include "atom/userPanel.h"
+
 TogglesPanel::TogglesPanel(QWidget *parent) : ListWidget(parent) {
   auto params = Params();
   addItem(new ParamControl("OpenpilotEnabledToggle",
@@ -335,6 +337,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {"Network", network_panel(this)},
     {"Toggles", new TogglesPanel(this)},
     {"Software", new SoftwarePanel(this)},
+    {"Community", new CUserPanel(this)},    
   };
 
 #ifdef ENABLE_MAPS
@@ -343,7 +346,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   QObject::connect(map_panel, &MapPanel::closeSettings, this, &SettingsWindow::closeSettings);
 #endif
 
-  const int padding = panels.size() > 3 ? 25 : 35;
+  const int padding = panels.size() > 3 ? 15 : 35;
 
   nav_btns = new QButtonGroup();
   for (auto &[name, panel] : panels) {
