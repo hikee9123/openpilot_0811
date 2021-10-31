@@ -83,8 +83,8 @@ class CarState(CarStateBase):
     if self.cruise_buttons_old == self.cruise_buttons:
       if self.engage_enable:
         if engage_disable_status:
-            self.engage_enable = False
-            self.time_delay_int = 100
+          self.engage_enable = False
+          self.time_delay_int = 100
         return self.engage_enable
       elif self.time_delay_int > 0:
         self.time_delay_int -= 1
@@ -92,7 +92,7 @@ class CarState(CarStateBase):
       if self.time_delay_int > 100:
         pass
       elif ret.vEgo < 5 or not left_lane or not right_lane or ret.leftBlinker or ret.rightBlinker:  # 15 km/h
-        self.time_delay_int = 100
+        self.time_delay_int = 150
       elif self.time_delay_int <= 0:
         self.engage_enable = True
 
@@ -227,36 +227,39 @@ class CarState(CarStateBase):
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
     ret.steerWarning = cp.vl["MDPS12"]["CF_Mdps_ToiUnavail"] != 0 or cp.vl["MDPS12"]["CF_Mdps_ToiFlt"] != 0
 
-    # cruise state
-    self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph   크루즈 설정 속도.
     self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]  #kph  현재 차량의 속도.
-    self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
     ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
-    ret.cruiseState.accActive = self.acc_active
-    ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
-    ret.cruiseState.cruiseSwState = self.cruise_buttons
-    ret.cruiseState.modeSel = self.cruise_set_mode
 
-
-    self.cruise_available = cp.vl["SCC11"]["MainMode_ACC"] == 1
-    self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0
-    if self.cruise_set_mode == 4:
-      ret.cruiseState.available = False
+    # cruise state
+    if self.CP.openpilotLongitudinalControl:
+      # These are not used for engage/disengage since openpilot keeps track of state using the buttons
+      ret.cruiseState.available = cp.vl["TCS13"]["ACCEnable"] == 0
+      ret.cruiseState.enabled = cp.vl["TCS13"]["ACC_REQ"] == 1
+      ret.cruiseState.standstill = False
     else:
-      ret.cruiseState.available = self.cruise_available
-    ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
+      self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph   크루즈 설정 속도.      
+      self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)      
+      ret.cruiseState.accActive = self.acc_active
+      ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
+      ret.cruiseState.cruiseSwState = self.cruise_buttons
+      ret.cruiseState.modeSel = self.cruise_set_mode
 
 
+      self.cruise_available = cp.vl["SCC11"]["MainMode_ACC"] == 1
+      self.acc_mode = cp.vl["SCC12"]["ACCMode"] != 0
+      if self.cruise_set_mode == 4:
+        ret.cruiseState.available = False
+      else:
+        ret.cruiseState.available = self.cruise_available
+      ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
 
-    
 
-
-    set_speed = self.cruise_speed_button()
-    if self.acc_active:
-      speed_conv = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] else CV.KPH_TO_MS
-      ret.cruiseState.speed = set_speed * speed_conv
-    else:
-      ret.cruiseState.speed = 0
+      set_speed = self.cruise_speed_button()
+      if self.acc_active:
+        speed_conv = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] else CV.KPH_TO_MS
+        ret.cruiseState.speed = set_speed * speed_conv
+      else:
+        ret.cruiseState.speed = 0
 
     # TODO: Find brake pressure
     ret.brake = 0

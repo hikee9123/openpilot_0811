@@ -10,6 +10,7 @@ from opendbc.can.packer import CANPacker
 from selfdrive.car.hyundai.navicontrol  import NaviControl
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
+LongCtrlState = car.CarControl.Actuators.LongControlState
 LaneChangeState = log.LateralPlan.LaneChangeState
 
 import common.loger as trace1
@@ -137,6 +138,7 @@ class CarController():
     enabled = c.enabled
     actuators = c.actuators
     pcm_cancel_cmd = c.cruiseControl.cancel
+    hud_speed = c.hudControl.setSpeed
     visual_alert = c.hudControl.visualAlert
     left_lane = c.hudControl.leftLaneVisible 
     right_lane = c.hudControl.rightLaneVisible 
