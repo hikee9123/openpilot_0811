@@ -84,6 +84,7 @@ class CarState(CarStateBase):
       if self.engage_enable:
         if engage_disable_status:
             self.engage_enable = False
+            self.time_delay_int = 100
         return self.engage_enable
       elif self.time_delay_int > 0:
         self.time_delay_int -= 1
