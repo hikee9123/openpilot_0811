@@ -2,15 +2,15 @@
 #include "safety_declarations.h"
 // Include the actual safety policies.
 //#include "safety/safety_defaults.h"
-//#include "safety/safety_defaults_HKG.h"
+#include "safety/safety_defaults_HKG.h"
 #include "safety/safety_honda.h"
 #include "safety/safety_toyota.h"
 #include "safety/safety_tesla.h"
-#include "safety/safety_gm_ascm.h"
-#include "safety/safety_gm.h"
+//#include "safety/safety_gm_ascm.h"
+//#include "safety/safety_gm.h"
 #include "safety/safety_ford.h"
-#include "safety/safety_hyundai_088.h"
-//#include "safety/safety_hyundai.h"
+//#include "safety/safety_hyundai_088.h"
+#include "safety/safety_hyundai.h"
 #include "safety/safety_chrysler.h"
 #include "safety/safety_subaru.h"
 #include "safety/safety_mazda.h"
@@ -243,7 +243,7 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_HONDA_NIDEC, &honda_nidec_hooks},
   {SAFETY_TOYOTA, &toyota_hooks},
   {SAFETY_ELM327, &elm327_hooks},
-  {SAFETY_GM, &gm_hooks},
+ // {SAFETY_GM, &gm_hooks},
   {SAFETY_HONDA_BOSCH_GIRAFFE, &honda_bosch_giraffe_hooks},
   {SAFETY_HONDA_BOSCH_HARNESS, &honda_bosch_harness_hooks},
   {SAFETY_HYUNDAI, &hyundai_hooks},
@@ -260,7 +260,7 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_SUBARU_LEGACY, &subaru_legacy_hooks},
   {SAFETY_VOLKSWAGEN_PQ, &volkswagen_pq_hooks},
   {SAFETY_ALLOUTPUT, &alloutput_hooks},
-  {SAFETY_GM_ASCM, &gm_ascm_hooks},
+//  {SAFETY_GM_ASCM, &gm_ascm_hooks},
   {SAFETY_FORD, &ford_hooks},
 #endif
 };
