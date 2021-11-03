@@ -1,3 +1,15 @@
+bool HKG_LCAN_on_bus1 = false;
+bool HKG_forward_bus1 = false;
+bool HKG_forward_obd = false;
+bool HKG_forward_bus2 = true;
+int HKG_obd_int_cnt = 20;
+int HKG_LKAS_bus0_cnt = 0;
+int HKG_Lcan_bus1_cnt = 0;
+int HKG_MDPS12_checksum = -1;
+int HKG_MDPS12_cnt = 0;
+int HKG_last_StrColT = 0;
+
+
 int OP_LKAS_live = 0;
 int OP_MDPS_live = 0;
 int OP_CLU_live = 0;
