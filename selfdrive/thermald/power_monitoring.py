@@ -22,8 +22,6 @@ MAX_TIME_OFFROAD_S = 30*3600
 MIN_ON_TIME_S = 3600
 
 
-OPKR_SHUTDOWN_TIME = 3                 # sec
-
 class PowerMonitoring:
   def __init__(self):
     self.params = Params()
