@@ -172,6 +172,8 @@ class DriverStatus():
     pitch_error = 0 if pitch_error > 0 else abs(pitch_error) # no positive pitch limit
     yaw_error = abs(yaw_error)
 
+    print( "left_blink={:.3f}  right_blink={:.3f}  cfactor={:.3f}".format( blink.left_blink, blink.right_blink, blink.cfactor ) )
+
     if pitch_error*self.settings._PITCH_WEIGHT > self.settings._METRIC_THRESHOLD*pose.cfactor or \
        yaw_error > self.settings._METRIC_THRESHOLD*pose.cfactor:
       return DistractedType.BAD_POSE
