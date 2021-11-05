@@ -36,7 +36,7 @@ procs = [
   PythonProcess("updated", "selfdrive.updated", enabled=not PC, persistent=True),
   PythonProcess("uploader", "selfdrive.loggerd.uploader", persistent=True),
 
-  PythonProcess("mapd", "selfdrive.mapd.mapd"),
+  #PythonProcess("mapd", "selfdrive.mapd.mapd"),
   PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
   PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),  
   #PythonProcess("systemd", "selfdrive.dragonpilot.systemd", persistent=True), 
