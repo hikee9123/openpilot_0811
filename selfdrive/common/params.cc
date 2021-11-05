@@ -335,6 +335,4 @@ void Params::clearAll(ParamKeyType key_type) {
   fsync_dir(path.c_str());
 }
 
-std::string Params::get_params_path() {
-  return params_path;
-}
+
