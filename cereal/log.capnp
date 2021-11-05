@@ -3,7 +3,6 @@ $Cxx.namespace("cereal");
 
 using Car = import "car.capnp";
 using Legacy = import "legacy.capnp";
-using Dp = import "dp.capnp";
 
 @0xf3b1f17e25a4285b;
 
@@ -1467,9 +1466,7 @@ struct Event {
 
     # atom NAVI Info
     liveNaviData @82 :LiveNaviData;
-    dragonConf @83 :Dp.DragonConf;
-
-
+  
     # *********** debug ***********
     testJoystick @52 :Joystick;
 
