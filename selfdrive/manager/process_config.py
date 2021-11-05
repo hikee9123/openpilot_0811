@@ -39,7 +39,7 @@ procs = [
   #PythonProcess("mapd", "selfdrive.mapd.mapd"),
   PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
   PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),  
-  PythonProcess("systemd", "selfdrive.dragonpilot.systemd", persistent=True), 
+  #PythonProcess("systemd", "selfdrive.dragonpilot.systemd", persistent=True), 
   
 
   # EON only
