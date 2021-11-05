@@ -64,7 +64,8 @@ services = {
   "uploaderState": (True, 0., 1),
 
 # atom
-  "liveNaviData": (True, 0.),
+  "liveNaviData": (False, 0.),
+  "dragonConf": (False, 1.),
 
   # debug
   "testJoystick": (False, 0.),
