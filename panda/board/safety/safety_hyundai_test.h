@@ -73,7 +73,7 @@ addr_checks hyundai_rx_checks = {hyundai_addr_checks, HYUNDAI_ADDR_CHECK_LEN};
 int OP_LKAS_live = 0;
 int OP_MDPS_live = 0;
 int OP_SCC_live = 0;
-int HKG_mdps_bus = 0;
+
 
 
 static uint8_t hyundai_get_counter(CANPacket_t *to_push) {
@@ -179,12 +179,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
     }
   }
 
-  // check MDPS on Bus
-  if ((addr == 593 || addr == 897) && HKG_mdps_bus != bus) {  //  MDPS12(593)   MDPS11(897)
-    if (bus != 1) {
-      HKG_mdps_bus = bus;
-    }
-  }
 
 
   if (valid && (bus == 0)) {
@@ -212,7 +206,7 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       }
     } else {
       // enter controls on rising edge of ACC, exit controls on ACC off
-      if (addr == 1056 && !OP_SCC_live ) { // for cars without long control
+      if (addr == 1056 ) { //&& !OP_SCC_live ) { // for cars without long control
         // 1 bits: 1
         int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
         if (cruise_engaged && !cruise_engaged_prev) {
@@ -382,14 +376,12 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   // forward cam to ccan and viceversa, except lkas cmd
   if (HKG_forward_bus2) {
     if (bus_num == 0) {
-      if ( addr != 1265 || HKG_mdps_bus == 0) {    // CLU11(1265)
+      if ( addr != 1265 ) {    // CLU11(1265)
         if (!OP_MDPS_live || addr != 593) {
           bus_fwd = 2;  // EON create EMS11 for MDPS
         } else {
           OP_MDPS_live -= 1;
         }
-      } else {
-        bus_fwd = 2; // EON create CLU12 for MDPS
       }
     }
 
