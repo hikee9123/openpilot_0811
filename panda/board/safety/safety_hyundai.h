@@ -176,7 +176,18 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       }
     } else {
       // enter controls on rising edge of ACC, exit controls on ACC off
-      if (addr == 1057) {
+      if (addr == 1056 ) { //&& !OP_SCC_live ) { // for cars without long control
+        // 1 bits: 1
+        int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
+        if (cruise_engaged && !cruise_engaged_prev) {
+          controls_allowed = 1;
+        }
+        if (!cruise_engaged) {
+          controls_allowed = 0;
+        }
+        cruise_engaged_prev = cruise_engaged;
+      }          
+      else if (addr == 1057 && 0) {
         // 2 bits: 13-14
         int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
         if (cruise_engaged && !cruise_engaged_prev) {
