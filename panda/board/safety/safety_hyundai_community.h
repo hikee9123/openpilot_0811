@@ -10,7 +10,7 @@ const CanMsg HYUNDAI_COMMUNITY_TX_MSGS[] = {
   {832, 0, 8},  // LKAS11 ->2
   {1265, 0, 4}, // CLU11 Bus   ->0
   {1157, 0, 4}, // LFAHDA_MFC Bus 0
-  {593, 2, 8},  // MDPS12, Bus 2      ->0
+  {593, 2, 8},  // MDPS12, Bus 2      ->0OP_SCC_live
  };
 
 // older hyundai models have less checks due to missing counters and checksums
