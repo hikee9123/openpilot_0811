@@ -371,7 +371,7 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
 static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
  UNUSED(to_fwd);  
   int bus_fwd = -1;
-
+  int addr = GET_ADDR(to_fwd);
 
 
   // forward cam to ccan and viceversa, except lkas cmd
