@@ -75,7 +75,7 @@ int OP_MDPS_live = 0;
 int OP_CLU_live = 0;
 int OP_SCC_live = 0;
 int OP_EMS_live = 0;
-int HKG_mdps_bus = -1;
+int HKG_mdps_bus = 0;
 
 
 static uint8_t hyundai_get_counter(CANPacket_t *to_push) {
@@ -158,9 +158,48 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
                                  hyundai_get_checksum, hyundai_compute_checksum,
                                  hyundai_get_counter);
 
-  if (valid && (GET_BUS(to_push) == 0)) {
-    int addr = GET_ADDR(to_push);
+  int addr = GET_ADDR(to_push);
+  int bus = GET_BUS(to_push);
 
+  if (bus == 1 && HKG_LCAN_on_bus1) {valid = false;}
+  // check if we have a LCAN on Bus1
+  if (bus == 1 && (addr == 1296 || addr == 524)) {
+    HKG_Lcan_bus1_cnt = 500;
+    if (HKG_forward_bus1 || !HKG_LCAN_on_bus1) {
+      HKG_LCAN_on_bus1 = true;
+      HKG_forward_bus1 = false;
+      puts("  LCAN on bus1: forwarding disabled\n");
+    }
+  }
+
+  // check if LKAS on Bus0
+  if (addr == 832) {
+    if (bus == 0 && HKG_forward_bus2) {HKG_forward_bus2 = false; HKG_LKAS_bus0_cnt = 20; puts("  LKAS on bus0: forwarding disabled\n");}
+    if (bus == 2) {
+      if (HKG_LKAS_bus0_cnt > 0) {HKG_LKAS_bus0_cnt--;} else if (!HKG_forward_bus2) {HKG_forward_bus2 = true; puts("  LKAS on bus2 & not on bus0: forwarding enabled\n");}
+      if (HKG_Lcan_bus1_cnt > 0) {HKG_Lcan_bus1_cnt--;} else if (HKG_LCAN_on_bus1) {HKG_LCAN_on_bus1 = false; puts("  Lcan not on bus1\n");}
+    }
+  }
+
+  // check MDPS on Bus
+  if ((addr == 593 || addr == 897) && HKG_mdps_bus != bus) {
+    if (bus != 1 || (!HKG_LCAN_on_bus1 || HKG_forward_obd)) {
+      HKG_mdps_bus = bus;
+      if (bus == 1 && !HKG_forward_obd) { puts("  MDPS on bus1\n"); if (!HKG_forward_bus1 && !HKG_LCAN_on_bus1) {HKG_forward_bus1 = true; puts("  bus1 forwarding enabled\n");}}
+      else if (bus == 1) {puts("  MDPS on obd bus\n");}
+    }
+  }
+
+  // check SCC on Bus
+  if ((addr == 1056 || addr == 1057) && HKG_scc_bus != bus) {
+    if (bus != 1 || !HKG_LCAN_on_bus1) {
+      HKG_scc_bus = bus;
+      if (bus == 1) { puts("  SCC on bus1\n"); if (!HKG_forward_bus1) {HKG_forward_bus1 = true;puts("  bus1 forwarding enabled\n");}}
+      if (bus == 2) { puts("  SCC bus = bus2\n");}
+    }
+  }
+
+  if (valid && (bus == 0)) {
     if (addr == 593) {
       int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
       // update array of samples
@@ -185,20 +224,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       }
     } else {
       // enter controls on rising edge of ACC, exit controls on ACC off
-      
-      /*
-      if (addr == 1057) {
-        // 2 bits: 13-14
-        int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
-        if (cruise_engaged && !cruise_engaged_prev) {
-          controls_allowed = 1;
-        }
-        if (!cruise_engaged) {
-          controls_allowed = 0;
-        }
-        cruise_engaged_prev = cruise_engaged;
-      }
-      */
       if (addr == 1056 && !OP_SCC_live ) { // for cars without long control
         // 1 bits: 1
         int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
@@ -212,17 +237,7 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       }      
     }
 
-    // read gas pressed signal
-    /*
-    if ((addr == 881) && hyundai_ev_gas_signal) {
-      gas_pressed = (((GET_BYTE(to_push, 4) & 0x7F) << 1) | GET_BYTE(to_push, 3) >> 7) != 0;
-    } else if ((addr == 881) && hyundai_hybrid_gas_signal) {
-      gas_pressed = GET_BYTE(to_push, 7) != 0;
-    } else if (addr == 608) {  // ICE
-      gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
-    } else {
-    }
-    */
+
 
     // sample wheel speed, averaging opposite corners
     if (addr == 902) {
@@ -232,11 +247,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       vehicle_moving = hyundai_speed > HYUNDAI_STANDSTILL_THRSLD;
     }
 
-    /*
-    if (addr == 916) {
-      brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
-    }
-    */
 
     bool stock_ecu_detected = (addr == 832);
 
@@ -246,11 +256,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       stock_ecu_detected = true;
     }
     generic_rx_checks(stock_ecu_detected);
-
-    if (addr == 593) {OP_MDPS_live = 20;}
-    //if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
-    if (addr == 1057) {OP_SCC_live = 20; }   
-    if (addr == 790) {OP_EMS_live = 20;}
   }
 
  
@@ -305,8 +310,14 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
     }
   }
 
+  if (relay_malfunction) {
+    tx = 0;
+    puts("  CAN TX not allowed LKAS on bus0"); puts("\n");
+  }
+
   // LKA STEER: safety check
   if (addr == 832) {
+    OP_LKAS_live = 20;
     int desired_torque = ((GET_BYTES_04(to_send) >> 16) & 0x7ff) - 1024;
     uint32_t ts = microsecond_timer_get();
     bool violation = 0;
@@ -369,6 +380,12 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
   }
 
   // 1 allows the message through
+
+
+  if (addr == 593) {OP_MDPS_live = 20;}
+  //if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
+  if (addr == 1057) {OP_SCC_live = 20; }   
+  if (addr == 790) {OP_EMS_live = 20;}  
   return tx;
 }
 
