@@ -57,7 +57,7 @@ static int nooutput_tx_lin_hook(int lin_num, uint8_t *data, int len) {
 }
 
 static int default_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
-
+  UNUSED(to_fwd);
   int bus_fwd = -1;
 
   if( HKG_forward_bus2 )
