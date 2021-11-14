@@ -65,9 +65,9 @@ static int default_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
     if (bus_num == 0 ) {
       bus_fwd = 2;
     }
-    //int addr = GET_ADDR(to_fwd);
-    //if (bus_num == 2 && (addr != 832) && (addr != 1157) ) {
-    if (bus_num == 2 ) {
+    int addr = GET_ADDR(to_fwd);
+    if (bus_num == 2 && (addr != 832) && (addr != 1157) ) {
+    //if (bus_num == 2 ) {
       bus_fwd =  0;
     }
   }
