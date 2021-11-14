@@ -16,7 +16,6 @@ int default_rx_hook(CANPacket_t *to_push) {
       if (HKG_forward_bus2) 
       {
         HKG_forward_bus2 = false; 
-        puts("  LKAS on bus0: forwarding disabled\n");
       }
     }
     if (bus == 2) {
@@ -27,7 +26,6 @@ int default_rx_hook(CANPacket_t *to_push) {
       else if (!HKG_forward_bus2) 
       {
         HKG_forward_bus2 = true; 
-        puts("  LKAS on bus2 & not on bus0: forwarding enabled\n");
       }
     }
   }
