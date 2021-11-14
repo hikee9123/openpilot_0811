@@ -381,7 +381,7 @@ if (HKG_forward_bus2) {
 
   //int addr = GET_ADDR(to_fwd);
   //if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {
-    if( bus_num == 2 )
+  if( bus_num == 2 ) {
     bus_fwd = 0;
   }
 }
