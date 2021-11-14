@@ -366,7 +366,7 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
     bus_fwd = 2;
   }
   if (bus_num == 1 ) {
-    bus_fwd = 20;
+    bus_fwd = 0;
   }   
   if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {  // 832 LKAS11 1157 LFAHDA_MFC
     bus_fwd = 0;
