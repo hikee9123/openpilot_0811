@@ -69,6 +69,15 @@ bool hyundai_longitudinal = false;
 
 addr_checks hyundai_rx_checks = {hyundai_addr_checks, HYUNDAI_ADDR_CHECK_LEN};
 
+
+int OP_LKAS_live = 0;
+int OP_MDPS_live = 0;
+int OP_CLU_live = 0;
+int OP_SCC_live = 0;
+int OP_EMS_live = 0;
+int HKG_mdps_bus = -1;
+
+
 static uint8_t hyundai_get_counter(CANPacket_t *to_push) {
   int addr = GET_ADDR(to_push);
 
@@ -357,20 +366,68 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
 }
 
 static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
-
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
+  int fwd_to_bus1 = -1;
+  if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
 
   // forward cam to ccan and viceversa, except lkas cmd
-  if (bus_num == 0) {
-    bus_fwd = 2;
+  if (HKG_forward_bus2) {
+    if (bus_num == 0) {
+      if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
+        if (!OP_MDPS_live || addr != 593) {
+          if (!OP_EMS_live || addr != 790) {
+            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+          } else {
+            bus_fwd = 2;  // EON create EMS11 for MDPS
+            OP_EMS_live -= 1;
+          }
+        } else {
+          bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
+          OP_MDPS_live -= 1;
+        }
+      } else {
+        bus_fwd = 2; // EON create CLU12 for MDPS
+        OP_CLU_live -= 1;
+      }
+    }
+    if (bus_num == 1 && (HKG_forward_bus1 || HKG_forward_obd)) {
+      if (!OP_MDPS_live || addr != 593) {
+        if (!OP_SCC_live || (addr != 1056 && addr != 1057 && addr != 1290 && addr != 905)) {
+          bus_fwd = 20;
+        } else {
+          bus_fwd = 2;  // EON create SCC11 SCC12 SCC13 SCC14 for Car
+          OP_SCC_live -= 1;
+        }
+      } else {
+        bus_fwd = 0;  // EON create MDPS for LKAS
+        OP_MDPS_live -= 1;
+      }
+    }
+    if (bus_num == 2) {
+      if (!OP_LKAS_live || (addr != 832 && addr != 1157)) {
+        if (!OP_SCC_live || (addr != 1056 && addr != 1057 && addr != 1290 && addr != 905)) {
+          bus_fwd = fwd_to_bus1 == 1 ? 10 : 0;
+        } else {
+          bus_fwd = fwd_to_bus1;  // EON create SCC12 for Car
+          OP_SCC_live -= 1;
+        }
+      } else if (HKG_mdps_bus == 0) {
+        bus_fwd = fwd_to_bus1; // EON create LKAS and LFA for Car
+        OP_LKAS_live -= 1;
+      } else {
+        OP_LKAS_live -= 1; // EON create LKAS and LFA for Car and MDPS
+      }
+    }
+  } else {
+    if (bus_num == 0) {
+      bus_fwd = fwd_to_bus1;
+    }
+    if (bus_num == 1 && (HKG_forward_bus1 || HKG_forward_obd)) {
+      bus_fwd = 0;
+    }
   }
-  if (bus_num == 1 ) {
-    bus_fwd = 0;
-  }   
-  if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {  // 832 LKAS11 1157 LFAHDA_MFC
-    bus_fwd = 0;
-  }
+  return bus_fwd;
 
   return bus_fwd;
 }
