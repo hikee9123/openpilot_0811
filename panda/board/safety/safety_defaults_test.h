@@ -14,6 +14,10 @@ static const addr_checks* nooutput_init(int16_t param) {
   UNUSED(param);
   controls_allowed = false;
   relay_malfunction_reset();
+  if (current_board->has_obd ) {
+    current_board->set_can_mode(CAN_MODE_OBD_CAN2);
+    puts("setting can mode obd\n");
+  }  
   return &default_rx_checks;
 }
 
@@ -40,6 +44,9 @@ static int default_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   if (bus_num == 0) {
     bus_fwd = 2;
   }
+  if (bus_num == 1 ) {
+    bus_fwd = 20;
+  }  
   if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {  // 832 LKAS11 1157 LFAHDA_MFC
     bus_fwd = 0;
   } 
