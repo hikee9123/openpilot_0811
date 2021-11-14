@@ -199,7 +199,7 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
         cruise_engaged_prev = cruise_engaged;
       }
       */
-      if (addr == 1056 ) { // for cars without long control
+      if (addr == 1056 && !OP_SCC_live ) { // for cars without long control
         // 1 bits: 1
         int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
         if (cruise_engaged && !cruise_engaged_prev) {
@@ -246,7 +246,14 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       stock_ecu_detected = true;
     }
     generic_rx_checks(stock_ecu_detected);
+
+  if (addr == 593) {OP_MDPS_live = 20;}
+  if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
+  if (addr == 1057) {OP_SCC_live = 20; }   
+  if (addr == 790) {OP_EMS_live = 20;}
   }
+
+ 
   return valid;
 }
 
@@ -427,8 +434,6 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
       bus_fwd = 0;
     }
   }
-  return bus_fwd;
-
   return bus_fwd;
 }
 
