@@ -376,11 +376,11 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   // forward cam to ccan and viceversa, except lkas cmd
   if (HKG_forward_bus2) {
     if (bus_num == 0) {
-        if (!OP_MDPS_live || addr != 593) {
+        //if (!OP_MDPS_live || addr != 593) {
           bus_fwd = 2;  // EON create EMS11 for MDPS
-        } else {
-          OP_MDPS_live -= 1;
-        }
+        //} else {
+        //  OP_MDPS_live -= 1;
+       // }
     }
 
     if (bus_num == 2) {
