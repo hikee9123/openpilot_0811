@@ -369,7 +369,6 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
 }
 
 static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
- UNUSED(to_fwd);  
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
 
@@ -377,13 +376,11 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   // forward cam to ccan and viceversa, except lkas cmd
   if (HKG_forward_bus2) {
     if (bus_num == 0) {
-      //if ( addr != 1265 ) {    // CLU11(1265)
         if (!OP_MDPS_live || addr != 593) {
           bus_fwd = 2;  // EON create EMS11 for MDPS
         } else {
           OP_MDPS_live -= 1;
         }
-      //}
     }
 
     if (bus_num == 2) {
@@ -399,6 +396,17 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
     }
   }
   
+
+  /*
+  // forward cam to ccan and viceversa, except lkas cmd
+  if (bus_num == 0) {
+    bus_fwd = 2;
+  }
+  if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {
+    bus_fwd = 0;
+  }
+  */
+
   return bus_fwd;
 }
 
