@@ -42,8 +42,8 @@ AddrCheckStruct hyundai_addr_checks[] = {
 AddrCheckStruct hyundai_long_addr_checks[] = {
   {.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U},
            {881, 0, 8, .expected_timestep = 10000U}, { 0 }}},
-  {.msg = {{902, 0, 8, .expected_timestep = 10000U}, { 0 }, { 0 }}},
-  {.msg = {{916, 0, 8, .expected_timestep = 10000U}, { 0 }, { 0 }}},
+  {.msg = {{902, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 10000U}, { 0 }, { 0 }}},
+  {.msg = {{916, 0, 8, .check_checksum = true, .max_counter = 7U, .expected_timestep = 10000U}, { 0 }, { 0 }}},
   {.msg = {{1265, 0, 4, .check_checksum = false, .max_counter = 15U, .expected_timestep = 20000U}, { 0 }, { 0 }}},
 };
 #define HYUNDAI_LONG_ADDR_CHECK_LEN (sizeof(hyundai_long_addr_checks) / sizeof(hyundai_long_addr_checks[0]))
@@ -69,7 +69,7 @@ bool hyundai_longitudinal = false;
 
 addr_checks hyundai_rx_checks = {hyundai_addr_checks, HYUNDAI_ADDR_CHECK_LEN};
 
-static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
+static uint8_t hyundai_get_counter(CANPacket_t *to_push) {
   int addr = GET_ADDR(to_push);
 
   uint8_t cnt;
@@ -89,7 +89,7 @@ static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
   return cnt;
 }
 
-static uint8_t hyundai_get_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
+static uint8_t hyundai_get_checksum(CANPacket_t *to_push) {
   int addr = GET_ADDR(to_push);
 
   uint8_t chksum;
@@ -107,7 +107,7 @@ static uint8_t hyundai_get_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
   return chksum;
 }
 
-static uint8_t hyundai_compute_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
+static uint8_t hyundai_compute_checksum(CANPacket_t *to_push) {
   int addr = GET_ADDR(to_push);
 
   uint8_t chksum = 0;
@@ -143,7 +143,7 @@ static uint8_t hyundai_compute_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
   return chksum;
 }
 
-static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
+static int hyundai_rx_hook(CANPacket_t *to_push) {
 
   bool valid = addr_safety_check(to_push, &hyundai_rx_checks,
                                  hyundai_get_checksum, hyundai_compute_checksum,
@@ -175,22 +175,9 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         }
       }
     } else {
-      if (addr == 1056 && !OP_SCC_live) { // for cars without long control
-        // 2 bits: 13-14
-        int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
-        if (cruise_engaged && !cruise_engaged_prev) {
-          controls_allowed = 1;
-          puts("  SCC w/o long control: controls allowed"); puts("\n");
-        }
-        if (!cruise_engaged) {
-          if (controls_allowed) {puts("  SCC w/o long control: controls not allowed"); puts("\n");}
-          controls_allowed = 0;
-        }
-        cruise_engaged_prev = cruise_engaged;
-      }
-
-      /*
       // enter controls on rising edge of ACC, exit controls on ACC off
+      
+      /*
       if (addr == 1057) {
         // 2 bits: 13-14
         int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
@@ -203,6 +190,17 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
         cruise_engaged_prev = cruise_engaged;
       }
       */
+      if (addr == 1056 ) { // for cars without long control
+        // 1 bits: 1
+        int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
+        if (cruise_engaged && !cruise_engaged_prev) {
+          controls_allowed = 1;
+        }
+        if (!cruise_engaged) {
+          controls_allowed = 0;
+        }
+        cruise_engaged_prev = cruise_engaged;
+      }      
     }
 
     // read gas pressed signal
@@ -243,7 +241,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   return valid;
 }
 
-static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
+static int hyundai_tx_hook(CANPacket_t *to_send) {
 
   int tx = 1;
   int addr = GET_ADDR(to_send);
@@ -358,68 +356,17 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   return tx;
 }
 
-static int hyundai_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
+static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
 
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
-  int fwd_to_bus1 = -1;
-  if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
 
   // forward cam to ccan and viceversa, except lkas cmd
-  if (HKG_forward_bus2) {
-    if (bus_num == 0) {
-      if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
-        if (!OP_MDPS_live || addr != 593) {
-          if (!OP_EMS_live || addr != 790) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else {
-            bus_fwd = 2;  // EON create EMS11 for MDPS
-            OP_EMS_live -= 1;
-          }
-        } else {
-          bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
-          OP_MDPS_live -= 1;
-        }
-      } else {
-        bus_fwd = 2; // EON create CLU12 for MDPS
-        OP_CLU_live -= 1;
-      }
-    }
-    if (bus_num == 1 && (HKG_forward_bus1 || HKG_forward_obd)) {
-      if (!OP_MDPS_live || addr != 593) {
-        if (!OP_SCC_live || (addr != 1056 && addr != 1057 && addr != 1290 && addr != 905)) {
-          bus_fwd = 20;
-        } else {
-          bus_fwd = 2;  // EON create SCC11 SCC12 SCC13 SCC14 for Car
-          OP_SCC_live -= 1;
-        }
-      } else {
-        bus_fwd = 0;  // EON create MDPS for LKAS
-        OP_MDPS_live -= 1;
-      }
-    }
-    if (bus_num == 2) {
-      if (!OP_LKAS_live || (addr != 832 && addr != 1157)) {
-        if (!OP_SCC_live || (addr != 1056 && addr != 1057 && addr != 1290 && addr != 905)) {
-          bus_fwd = fwd_to_bus1 == 1 ? 10 : 0;
-        } else {
-          bus_fwd = fwd_to_bus1;  // EON create SCC12 for Car
-          OP_SCC_live -= 1;
-        }
-      } else if (HKG_mdps_bus == 0) {
-        bus_fwd = fwd_to_bus1; // EON create LKAS and LFA for Car
-        OP_LKAS_live -= 1;
-      } else {
-        OP_LKAS_live -= 1; // EON create LKAS and LFA for Car and MDPS
-      }
-    }
-  } else {
-    if (bus_num == 0) {
-      bus_fwd = fwd_to_bus1;
-    }
-    if (bus_num == 1 && (HKG_forward_bus1 || HKG_forward_obd)) {
-      bus_fwd = 0;
-    }
+  if (bus_num == 0) {
+    bus_fwd = 2;
+  }
+  if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {  // 832 LKAS11 1157 LFAHDA_MFC
+    bus_fwd = 0;
   }
 
   return bus_fwd;
