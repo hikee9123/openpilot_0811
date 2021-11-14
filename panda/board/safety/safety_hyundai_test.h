@@ -247,10 +247,10 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
     }
     generic_rx_checks(stock_ecu_detected);
 
-  if (addr == 593) {OP_MDPS_live = 20;}
-  //if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
-  if (addr == 1057) {OP_SCC_live = 20; }   
-  if (addr == 790) {OP_EMS_live = 20;}
+    if (addr == 593) {OP_MDPS_live = 20;}
+    //if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
+    if (addr == 1057) {OP_SCC_live = 20; }   
+    if (addr == 790) {OP_EMS_live = 20;}
   }
 
  
