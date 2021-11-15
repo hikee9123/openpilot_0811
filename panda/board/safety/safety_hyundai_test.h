@@ -161,7 +161,7 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
   int bus = GET_BUS(to_push);
 
   // check if LKAS on Bus0
-  if (addr == 832) {  // LKAS11
+  if ( valid && (addr == 832) ) {  // LKAS11
     if (bus == 0 && HKG_forward_bus2) {
       HKG_forward_bus2 = false; 
       HKG_LKAS_bus0_cnt = 20; 
@@ -293,7 +293,6 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
 
   if (relay_malfunction) {
     tx = 0;
-    puts("  CAN TX not allowed LKAS on bus0"); puts("\n");
   }
 
   // LKA STEER: safety check
