@@ -161,21 +161,21 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
   int bus = GET_BUS(to_push);
 
   // check if LKAS on Bus0
-  if ( valid && (addr == 832) ) {  // LKAS11
-    if (bus == 0 && HKG_forward_bus2) {
-      HKG_forward_bus2 = false; 
-      HKG_LKAS_bus0_cnt = 20; 
-    }
-    if (bus == 2) {
-      if (HKG_LKAS_bus0_cnt > 0) 
-      {
-        HKG_LKAS_bus0_cnt--;
-      } 
-      else if (!HKG_forward_bus2) 
-      {
-        HKG_forward_bus2 = true; 
+  if( hyundai_legacy )
+  {
+      if ( valid && (addr == 832) )  // LKAS11
+      {  
+        if (bus == 0 && HKG_forward_bus2) 
+        {
+          HKG_forward_bus2 = false; 
+          HKG_LKAS_bus0_cnt = 20; 
+        }
+        else if (bus == 2) 
+        {
+          if (HKG_LKAS_bus0_cnt > 0)  HKG_LKAS_bus0_cnt--;
+          else if (!HKG_forward_bus2) HKG_forward_bus2 = true; 
+        }
       }
-    }
   }
 
 
@@ -358,9 +358,11 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
   }
 
   // 1 allows the message through
-
-  if (addr == 593) {OP_MDPS_live = 20;}      // MDPS12 
-  if (addr == 1057) {OP_SCC_live = 20; }     // SCC12
+  if( hyundai_legacy )
+  {
+    if (addr == 593) {OP_MDPS_live = 20;}      // MDPS12 
+    if (addr == 1057) {OP_SCC_live = 20; }     // SCC12
+  }
   return tx;
 }
 
@@ -368,9 +370,18 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
 
-
   // forward cam to ccan and viceversa, except lkas cmd
-  if (HKG_forward_bus2) {
+  if( hyundai_legacy == false )
+  {
+    if (bus_num == 0) {
+      bus_fwd = 2;
+    }
+    if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {
+      bus_fwd = 0;
+    }
+  }
+  else if (HKG_forward_bus2) 
+  {
     if (bus_num == 0) {
         if (!OP_MDPS_live || addr != 593) {
           bus_fwd = 2;  // EON create EMS11 for MDPS
@@ -392,17 +403,6 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
     }
   }
   
-
-  /*
-  // forward cam to ccan and viceversa, except lkas cmd
-  if (bus_num == 0) {
-    bus_fwd = 2;
-  }
-  if ((bus_num == 2) && (addr != 832) && (addr != 1157)) {
-    bus_fwd = 0;
-  }
-  */
-
   return bus_fwd;
 }
 
