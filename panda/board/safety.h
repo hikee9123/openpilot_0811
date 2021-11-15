@@ -16,7 +16,7 @@
 #include "safety/safety_nissan.h"
 #include "safety/safety_volkswagen.h"
 #include "safety/safety_elm327.h"
-//#include "safety/safety_hyundai_community.h"
+
 
 // from cereal.car.CarParams.SafetyModel
 #define SAFETY_SILENT 0U
@@ -242,7 +242,6 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_HYUNDAI, &hyundai_hooks},
   {SAFETY_NOOUTPUT, &nooutput_hooks},
   {SAFETY_HYUNDAI_LEGACY, &hyundai_legacy_hooks},
- // {SAFETY_HYUNDAI_COMMUNITY, &hyundai_community_hooks},
 #ifdef ALLOW_DEBUG
   {SAFETY_NISSAN, &nissan_hooks},
   {SAFETY_CHRYSLER, &chrysler_hooks},
