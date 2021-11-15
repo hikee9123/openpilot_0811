@@ -14,6 +14,7 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
   {832, 0, 8},  // LKAS11 Bus 0
   {1265, 0, 4}, // CLU11 Bus 0
   {1157, 0, 4}, // LFAHDA_MFC Bus 0
+  {593, 2, 8},  // MDPS12, Bus 2      ->0  OP_SCC_live  
  };
 
 const CanMsg HYUNDAI_LONG_TX_MSGS[] = {
@@ -164,7 +165,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
     if (bus == 0 && HKG_forward_bus2) {
       HKG_forward_bus2 = false; 
       HKG_LKAS_bus0_cnt = 20; 
-      puts("  LKAS on bus0: forwarding disabled\n");
     }
     if (bus == 2) {
       if (HKG_LKAS_bus0_cnt > 0) 
@@ -174,7 +174,6 @@ static int hyundai_rx_hook(CANPacket_t *to_push) {
       else if (!HKG_forward_bus2) 
       {
         HKG_forward_bus2 = true; 
-        puts("  LKAS on bus2 & not on bus0: forwarding enabled\n");
       }
     }
   }
@@ -363,7 +362,7 @@ static int hyundai_tx_hook(CANPacket_t *to_send) {
 
   // 1 allows the message through
 
-  if (addr == 593) {OP_MDPS_live = 20;}      // MDPS12(593)
+  if (addr == 593) {OP_MDPS_live = 20;}      // MDPS12 
   if (addr == 1057) {OP_SCC_live = 20; }     // SCC12
   return tx;
 }
@@ -376,11 +375,11 @@ static int hyundai_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   // forward cam to ccan and viceversa, except lkas cmd
   if (HKG_forward_bus2) {
     if (bus_num == 0) {
-        //if (!OP_MDPS_live || addr != 593) {
+        if (!OP_MDPS_live || addr != 593) {
           bus_fwd = 2;  // EON create EMS11 for MDPS
-        //} else {
-        //  OP_MDPS_live -= 1;
-       // }
+        } else {
+          OP_MDPS_live -= 1;
+        }
     }
 
     if (bus_num == 2) {
