@@ -42,8 +42,10 @@ procs = [
   PythonProcess("androidd", "selfdrive.hardware.eon.androidd", enabled=EON, persistent=True),
 
   # dragonpilot
-  PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
-  PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),    
+#ifdef ENABLE_MAPS
+  #PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
+  #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),    
+#endif  
 ]
 
 managed_processes = {p.name: p for p in procs}
