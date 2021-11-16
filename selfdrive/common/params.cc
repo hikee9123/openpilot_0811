@@ -185,6 +185,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"OpkrRunNaviOnBoot", PERSISTENT},
     {"OpkrMapEnable", PERSISTENT},
     {"OpkrParameters", PERSISTENT},
+
+    {"dp_mapbox_token_sk", PERSISTENT},
 };
 
 } // namespace
