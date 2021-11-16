@@ -336,7 +336,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     }
   )");
   close_btn->setFixedSize(200, 200);
-  sidebar_layout->addSpacing(45);
+  sidebar_layout->addSpacing(20);
   sidebar_layout->addWidget(close_btn, 0, Qt::AlignCenter);
   QObject::connect(close_btn, &QPushButton::clicked, this, &SettingsWindow::closeSettings);
 
@@ -359,7 +359,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   QObject::connect(map_panel, &MapPanel::closeSettings, this, &SettingsWindow::closeSettings);
 #endif
 
-  const int padding = panels.size() > 3 ? 8 : 35;
+  const int padding = panels.size() > 3 ? 5 : 35;
 
   nav_btns = new QButtonGroup();
   for (auto &[name, panel] : panels) {
@@ -388,7 +388,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     sidebar_layout->addWidget(btn, 0, Qt::AlignRight);
 
     const int lr_margin = name != "Network" ? 50 : 0;  // Network panel handles its own margins
-    panel->setContentsMargins(lr_margin, 25, lr_margin, 25);
+    panel->setContentsMargins(lr_margin, 20, lr_margin, 20);
 
     ScrollView *panel_frame = new ScrollView(panel, this);
     panel_widget->addWidget(panel_frame);
