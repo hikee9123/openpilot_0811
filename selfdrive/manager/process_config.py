@@ -4,6 +4,7 @@ from selfdrive.manager.process import PythonProcess, NativeProcess, DaemonProces
 from selfdrive.hardware import EON, TICI, PC
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
+ENABLE_MAPS = os.getenv("ENABLE_MAPS") is not None
 
 procs = [
   DaemonProcess("manage_athenad", "selfdrive.athena.manage_athenad", "AthenadPid"),
@@ -43,8 +44,8 @@ procs = [
 
   # dragonpilot
 #ifdef ENABLE_MAPS
-  #PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=True),
-  #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd"),    
+  #PythonProcess("otisserv", "selfdrive.dragonpilot.otisserv", persistent=ENABLE_MAPS),
+  #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd", enabled=ENABLE_MAPS),
 #endif  
 ]
 
