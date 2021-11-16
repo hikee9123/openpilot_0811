@@ -44,7 +44,9 @@ void OnroadWindow::updateState(const UIState &s) {
   Alert alert = Alert::get(*(s.sm), s.scene.started_frame);
   if( s.scene.IsOpenpilotViewEnabled )
   {
-  } else if (alert.type == "controlsUnresponsive") {
+    return;
+  } 
+  if (alert.type == "controlsUnresponsive") {
     bgColor = bg_colors[STATUS_ALERT];
   }
   alerts->updateAlert(alert, bgColor);
