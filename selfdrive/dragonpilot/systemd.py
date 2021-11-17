@@ -181,6 +181,7 @@ def confd_thread():
     rk.keep_time()
 
 def update_conf(msg, conf, first_run = False):
+  print("systemd=> def update_conf(msg, conf, first_run = False): ")
   conf_type = conf.get('conf_type')
 
   # skip checking since modified date time hasn't been changed.
@@ -204,11 +205,13 @@ def update_conf(msg, conf, first_run = False):
   return msg
 
 def update_conf_all(confs, msg, first_run = False):
+  print("systemd=> update_conf_all(confs, msg, first_run = False): ")
   for conf in confs:
     msg = update_conf(msg, conf, first_run)
   return msg
 
 def process_charging_ctrl(msg, last_charging_ctrl, battery_percent):
+  print("systemd=> process_charging_ctrl(msg, last_charging_ctrl, battery_percent): ")
   charging_ctrl = msg.dragonConf.dpChargingCtrl
   if last_charging_ctrl != charging_ctrl:
     HARDWARE.set_battery_charging(True)
@@ -221,6 +224,7 @@ def process_charging_ctrl(msg, last_charging_ctrl, battery_percent):
 
 
 def pull_thermald(frame, sm, started, free_space, battery_percent, overheat):
+  print("systemd=> pull_thermald(frame, sm, started, free_space, battery_percent, overheat): ")
   sm.update(0)
   if sm.updated['deviceState']:
     started = sm['deviceState'].started
@@ -230,6 +234,7 @@ def pull_thermald(frame, sm, started, free_space, battery_percent, overheat):
   return started, free_space, battery_percent, overheat
 
 def update_custom_logic(msg):
+  print("systemd=> def update_custom_logic(msg): ")
   if msg.dragonConf.dpAtl:
     msg.dragonConf.dpAllowGas = True
     msg.dragonConf.dpGearCheck = False
@@ -250,6 +255,7 @@ def update_custom_logic(msg):
 
 
 def update_ip(msg):
+  print("systemd=> update_ip(msg): ")
   val = 'N/A'
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   try:
@@ -265,6 +271,7 @@ def update_ip(msg):
 
 
 def set_message(msg, conf):
+  print("systemd=> def set_message(msg, conf): ")
   val = params.get(conf['name'], encoding='utf8')
   if val is not None:
     val = val.rstrip('\x00')
@@ -284,6 +291,7 @@ def set_message(msg, conf):
   return msg
 
 def check_dependencies(msg, conf):
+  print("systemd=> def check_dependencies(msg, conf): ")
   passed = True
   # if has dependency and the depend param val is not in depend_vals, we dont update that conf val
   # this should reduce chance of reading unnecessary params
