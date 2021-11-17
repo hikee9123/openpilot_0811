@@ -304,7 +304,8 @@ def check_dependencies(msg, conf):
   return passed
 
 def main():
-  confd_thread()
+  #confd_thread()
+  print("systemd=>  exit")
 
 if __name__ == "__main__":
   main()
