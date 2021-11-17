@@ -30,7 +30,6 @@ import socket
 import threading
 from common.params import Params, put_nonblocking
 from selfdrive.hardware import HARDWARE
-from selfdrive.dragonpilot.dashcamd import Dashcamd
 from selfdrive.hardware import EON
 from common.realtime import Ratekeeper
 
