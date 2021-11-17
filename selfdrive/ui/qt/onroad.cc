@@ -61,11 +61,15 @@ void OnroadWindow::updateState(const UIState &s) {
 }
 
 void OnroadWindow::mousePressEvent(QMouseEvent* e) {
-  printf("1. OnroadWindow::mousePressEvent "  );
+  
   if (map != nullptr) {
     bool sidebarVisible = geometry().x() > 0;
     printf("2. OnroadWindow::mousePressEvent = %d", sidebarVisible  );
     map->setVisible(!sidebarVisible && !map->isVisible());
+  }
+  else
+  {
+     printf("1. OnroadWindow::mousePressEvent = map nullptr! "  );
   }
   // propagation event to parent(HomeWindow)
   QWidget::mousePressEvent(e);
