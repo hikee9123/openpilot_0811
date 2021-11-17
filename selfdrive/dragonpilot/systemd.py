@@ -48,6 +48,7 @@ HERTZ = 1
 last_modified_confs = {}
 
 def confd_thread():
+  return 
   sm = messaging.SubMaster(['deviceState'])
   pm = messaging.PubMaster(['dragonConf'])
 
