@@ -62,13 +62,12 @@ body {
 #pac-input {
   background-color: #fff;
   font-family: Roboto;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 300;
   margin-left: 12px;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 200px;
-  height: 30px;
 }
 
 #pac-input:focus {
