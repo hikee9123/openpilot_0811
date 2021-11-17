@@ -63,9 +63,10 @@ void OnroadWindow::updateState(const UIState &s) {
 void OnroadWindow::mousePressEvent(QMouseEvent* e) {
   
   if (map != nullptr) {
-    bool sidebarVisible = geometry().x() > 0;
+    int geometry_x = geometry().x();
+    bool sidebarVisible = geometry_x > 0;
     bool  mapVisiable = map->isVisible();
-    printf("2. OnroadWindow::mousePressEvent = %d, %d", sidebarVisible, mapVisiable  );
+    printf("2. OnroadWindow::mousePressEvent = %d, %d, %d", sidebarVisible, mapVisiable , geometry_x );
     map->setVisible( !sidebarVisible && !mapVisiable );
   }
   else
