@@ -64,7 +64,7 @@ void OnroadWindow::mousePressEvent(QMouseEvent* e) {
   int e_x = e->x();
   int e_y = e->y();
 
-  if( e_x > 600 || e_y > 100 ) 
+  if( e_x > 1400 || e_y > 800 ) 
   {
 
   }
