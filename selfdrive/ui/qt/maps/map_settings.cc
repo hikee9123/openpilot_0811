@@ -83,13 +83,13 @@ MapPanel::MapPanel(QWidget* parent) : QWidget(parent) {
   main_layout->addWidget(recents_title);
   main_layout->addSpacing(20);
 
-
+  return;
   recent_layout = new QVBoxLayout;
   QWidget *recent_widget = new LayoutWidget(recent_layout, this);
   ScrollView *recent_scroller = new ScrollView(recent_widget, this);
   main_layout->addWidget(recent_scroller);
-  
-  return;
+
+
   // No prime upsell
   QWidget * no_prime_widget = new QWidget;
   {
