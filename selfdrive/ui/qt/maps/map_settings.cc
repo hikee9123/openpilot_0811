@@ -117,7 +117,7 @@ MapPanel::MapPanel(QWidget* parent) : QWidget(parent) {
 
   stack->addWidget(main_widget);
   stack->addWidget(no_prime_widget);
-  stack->setCurrentIndex(0);
+  stack->setCurrentIndex(2);
 
   QVBoxLayout *wrapper = new QVBoxLayout(this);
   wrapper->addWidget(stack);
