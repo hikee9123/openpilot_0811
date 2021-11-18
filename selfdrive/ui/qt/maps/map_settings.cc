@@ -117,7 +117,7 @@ MapPanel::MapPanel(QWidget* parent) : QWidget(parent) {
 
   stack->addWidget(main_widget);
   stack->addWidget(no_prime_widget);
-  stack->setCurrentIndex(2);
+  stack->setCurrentIndex(0);
 
   QVBoxLayout *wrapper = new QVBoxLayout(this);
   wrapper->addWidget(stack);
@@ -286,7 +286,7 @@ void MapPanel::parseResponse(const QString &response) {
 }
 
 void MapPanel::failedResponse(const QString &response) {
-  stack->setCurrentIndex(1);
+  stack->setCurrentIndex(0);
 }
 
 void MapPanel::navigateTo(const QJsonObject &place) {
