@@ -195,7 +195,7 @@ class Controls:
       if modelSpeed:
         dRate = interp( modelSpeed, [200,450], [ 1, 0.9 ] )
         steerRatio = learnerSteerRatio * dRate
-        str_log1 = '{:3.0f} lsR={:8.5f} sR={:8.3f}'.format( modelSpeed, learnerSteerRatio,  steerRatio   )
+        str_log1 = '{:3.0f} lsR={:8.3f}'.format( modelSpeed, learnerSteerRatio )
         trace1.printf1( '{}'.format( str_log1 ) )
     steerRatio = clip( steerRatio, 13.5, 19.5 )
 

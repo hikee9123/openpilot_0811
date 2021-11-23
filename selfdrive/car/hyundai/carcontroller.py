@@ -108,10 +108,10 @@ class CarController():
     hdaVSetReq = CS.lfahda["HDA_VSetReq"]    
 
     str_log1 = 'MODE={:.0f} GAP={:.0f} hda={:.1f} vF={:.1f}'.format(  CS.cruise_set_mode, CS.out.cruiseState.gapSet, hdaVSetReq, vFuture )
-    trace1.printf2( '{}'.format( str_log1 ) )
+    trace1.printf3( '{}'.format( str_log1 ) )
   
-    str_log1 = 'BH={:.0f} '.format( CS.brake_hold )
-    trace1.printf3( '{}'.format( str_log1 ) )    
+    #str_log1 = 'BH={:.0f} '.format( CS.brake_hold )
+    #trace1.printf3( '{}'.format( str_log1 ) )    
 
   def updateLongitudinal(self, c, CS, frame):
     enabled = c.enabled
